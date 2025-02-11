@@ -1,17 +1,28 @@
 <!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tab Text</title>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.title = "What? Title of course ¯\\_( ͡° ͜ʖ ͡°)_/¯";
-        });
-    </script>
-</head>
 <html>
-    <body>
-        <h1>My website</h1>
-        <p>Greetings. Of course you are in my barren website with no design. Who doesn't like fast loading (‾◡◝)?</p>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+        #canvas {
+            display: block;
+            margin: 0;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script src="index.js"></script>
+    <script>
+        const engine = new Engine({"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":608192,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]});
+        engine.startGame();
+    </script>
+</body>
 </html>
