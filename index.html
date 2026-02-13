@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Pico Demo</title>
+    <title>Introducing Scikit-Learn</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.min.css">
@@ -226,6 +226,127 @@ px.scatter(iris, "PCA1", "PCA2", facet_col="cluster", color="species")</code></p
             clustering algorithm! This sort of algorithm might further give experts in the field
             clues as to the relationships between the samples they are observing.</p>
 
+        <h2>Application: Exploring Handwritten Digits</h2>
+        <p>To demonstrate these principles on a more interesting problem, let’s consider one
+            piece of the optical character recognition problem: the identification of handwritten
+            digits. In the wild, this problem involves both locating and identifying characters in
+            an image. Here we’ll take a shortcut and use Scikit-Learn’s set of preformatted digits,
+            which is built into the library.</p>
+
+        <h3>Loading and Visualizing the Digits Data</h3>
+        <p>We can use Scikit-Learn’s data access interface to take a look at this data:</p>
+        <pre><code class=" language-python">from sklearn.datasets import load_digits
+digits = load_digits()</code></pre>
+
+        <p>The images data is a three-dimensional array: 1,797 samples each consisting of an 8 ×
+            8 grid of pixels. Let’s visualize the first hundred of these</p>
+        <pre><code class=" language-python">import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(10, 10, figsize=(8, 8),
+                         subplot_kw={'xticks':[], 'yticks':[]},
+                         gridspec_kw=dict(hspace=0.1, wspace=0.1))
+
+for i, ax in enumerate(axes.flat):
+    ax.imshow(digits.images[i], cmap='binary', interpolation='nearest')
+    ax.text(0.05, 0.05, str(digits.target[i]),
+            transform=ax.transAxes, color='green')</code></pre>
+        <figure style="text-align:center;"><img src="./images/digits.svg"></figure>
+
+        <p>In order to work with this data within Scikit-Learn, we need a two-dimensional,
+            [n_samples, n_features] representation. We can accomplish this by treating each
+            pixel in the image as a feature: that is, by flattening out the pixel arrays so that we
+            have a length-64 array of pixel values representing each digit. Additionally, we need
+            the target array, which gives the previously determined label for each digit. These two quantities are built
+            into the digits dataset under the data and target attributes,
+            respectively:</p>
+        <pre><code class=" language-python">X = digits.data
+y = digits.target</code></pre>
+
+        <h3>Unsupervised Learning Example: Dimensionality Reduction</h3>
+        We’d like to visualize our points within the 64-dimensional parameter space, but it’s
+        difficult to effectively visualize points in such a high-dimensional space. Instead, we’ll
+        reduce the number of dimensions, using an unsupervised method. Here, we’ll make
+        use of a manifold learning algorithm called Isomap and transform
+        the data to two dimensions:
+        <pre><code class=" language-python">from sklearn.manifold import Isomap
+iso = Isomap(n_components=2)
+iso.fit(digits.data)
+data_projected = iso.transform(digits.data)</code></pre>
+
+        <p>We see that the projected data is now two-dimensional. Let’s plot this data to see if we
+            can learn anything from its structure</p>
+        <pre><code class=" language-python">import plotly.express as px
+px.scatter(x=data_projected[:,0], y=data_projected[:,1], color=y, labels={
+    "color":"digit label" 
+})</code></pre>
+        <iframe class="center-iframe" src="./plots/digits_isomap.html" width="100%"></iframe>
+
+        <p>This plot gives us some good intuition into how well various numbers are separated
+            in the larger 64-dimensional space. For example, zeros and ones have very little over‐
+            lap in the parameter space. Intuitively, this makes sense: a zero is empty in the middle
+            of the image, while a one will generally have ink in the middle. On the other hand,
+            there seems to be a more or less continuous spectrum between ones and fours: we can
+            understand this by realizing that some people draw ones with “hats” on them, which
+            causes them to look similar to fours.</p>
+        <p>Overall, however, despite some mixing at the edges, the different groups appear to be
+            fairly well localized in the parameter space: this suggests that even a very straightfor‐
+            ward supervised classification algorithm should perform suitably on the full high-
+            dimensional dataset. Let’s give it a try.</p>
+
+        <h3>Classification on Digits</h3>
+        <p>Let’s apply a classification algorithm to the digits data. As we did with the Iris data
+            previously, we will split the data into training and testing sets and fit a Gaussian naive
+            Bayes model:</p>
+
+        <pre><code class=" language-python">from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+
+Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, random_state=0)
+model = GaussianNB()
+model.fit(Xtrain, ytrain)
+y_model = model.predict(Xtest)</code></pre>
+
+        <p>Now that we have the model’s predictions, we can gauge its accuracy by comparing
+            the true values of the test set to the predictions:</p>
+        <pre><code class="language-python">from sklearn.metrics import accuracy_score
+accuracy_score(ytest, y_model)  # 0.8333333333333334</code></pre>
+
+        <p>With even this very simple model, we find about 83% accuracy for classification of
+            the digits! However, this single number doesn’t tell us where we’ve gone wrong. One
+            nice way to do this is to use the confusion matrix</p>
+        <pre><code class="language-python">from sklearn.metrics import confusion_matrix
+mat = confusion_matrix(ytest, y_model)
+
+px.imshow(
+    mat,
+    text_auto=True,
+    color_continuous_scale="Blues",
+    labels=dict(x="predicted value", y="true value", color="Count"),
+)</code></pre>
+        <p>This shows us where the mislabeled points tend to be: for example, many of the twos
+            here are misclassified as either ones or eights.</p>
+        <iframe class="center-iframe" src="./plots/digits_cm.html" width="100%"></iframe>
+
+        <p>Another way to gain intuition into the characteristics of the model is to plot the
+            inputs again, with their predicted labels. We’ll use green for correct labels and red for
+            incorrect labels</p>
+        <pre><code class="language-python">fig, axes = plt.subplots(10, 10, figsize=(8, 8),
+                         subplot_kw={'xticks':[], 'yticks':[]},
+                         gridspec_kw=dict(hspace=0.1, wspace=0.1))
+
+test_images = Xtest.reshape(-1, 8, 8)
+
+for i, ax in enumerate(axes.flat):
+    ax.imshow(test_images[i], cmap='binary', interpolation='nearest')
+    ax.text(0.05, 0.05, str(y_model[i]),
+            transform=ax.transAxes,
+            color='green' if (ytest[i] == y_model[i]) else 'red')</code></pre>
+        <figure style="text-align:center;"><img src="./images/digits_predicted.svg"></figure>
+
+        <p>Examining this subset of the data can give us some insight into where the algorithm
+            might be not performing optimally. To go beyond our 83% classification success rate,
+            we might switch to a more sophisticated algorithm such as support vector machines
+            (see Chapter 43), random forests (see Chapter 44), or another classification approach.</p>
     </main>
 
 </body>
