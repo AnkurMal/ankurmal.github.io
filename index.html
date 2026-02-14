@@ -1,354 +1,912 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Introducing Scikit-Learn</title>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-    <script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
 
-    <style>
-        .center-iframe {
-            display: block;
-            margin: 0 auto;
-            height: 600px;
-        }
-    </style>
+<title>Data Representation in Scikit-Learn</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="test_files/libs/clipboard/clipboard.min.js"></script>
+<script src="test_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="test_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="test_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="test_files/libs/quarto-html/popper.min.js"></script>
+<script src="test_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="test_files/libs/quarto-html/anchor.min.js"></script>
+<link href="test_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="test_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="test_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="test_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="test_files/libs/bootstrap/bootstrap-3a1144655128006140aa6d0f77c327fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
 
 </head>
 
-<body>
+<body class="quarto-light">
 
-    <main class="container" id="content">
-        <h1>Data Representation in Scikit-Learn</h1>
-        <p>
-            Machine learning is about creating models from data; for that reason, we'll start by
-            discussing how data can be represented. The best way to think about data within
-            Scikit-Learn is in terms of tables.
-            A basic table is a two-dimensional grid of data, in which the rows represent individual
-            elements of the dataset, and the columns represent quantities related to each of
-            these elements. For example, consider the Iris dataset, famously analyzed by Ronald
-            Fisher in 1936. We can download this dataset in the form of a Pandas DataFrame
-            using the Seaborn library.
-        </p>
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-features-matrix" id="toc-the-features-matrix" class="nav-link active" data-scroll-target="#the-features-matrix">The Features Matrix</a></li>
+  <li><a href="#the-target-array" id="toc-the-target-array" class="nav-link" data-scroll-target="#the-target-array">The Target Array</a></li>
+  <li><a href="#supervised-learning-example-iris-classification" id="toc-supervised-learning-example-iris-classification" class="nav-link" data-scroll-target="#supervised-learning-example-iris-classification">Supervised Learning Example: Iris Classification</a></li>
+  <li><a href="#unsupervised-learning-example-iris-dimensionality" id="toc-unsupervised-learning-example-iris-dimensionality" class="nav-link" data-scroll-target="#unsupervised-learning-example-iris-dimensionality">Unsupervised Learning Example: Iris Dimensionality</a></li>
+  <li><a href="#unsupervised-learning-example-iris-clustering" id="toc-unsupervised-learning-example-iris-clustering" class="nav-link" data-scroll-target="#unsupervised-learning-example-iris-clustering">Unsupervised Learning Example: Iris Clustering</a></li>
+  <li><a href="#application-exploring-handwritten-digits" id="toc-application-exploring-handwritten-digits" class="nav-link" data-scroll-target="#application-exploring-handwritten-digits">Application: Exploring Handwritten Digits</a></li>
+  <li><a href="#loading-and-visualizing-the-digits-data" id="toc-loading-and-visualizing-the-digits-data" class="nav-link" data-scroll-target="#loading-and-visualizing-the-digits-data">Loading and Visualizing the Digits Data</a></li>
+  <li><a href="#unsupervised-learning-example-dimensionality-reduction" id="toc-unsupervised-learning-example-dimensionality-reduction" class="nav-link" data-scroll-target="#unsupervised-learning-example-dimensionality-reduction">Unsupervised Learning Example: Dimensionality Reduction</a></li>
+  <li><a href="#classification-on-digits" id="toc-classification-on-digits" class="nav-link" data-scroll-target="#classification-on-digits">Classification on Digits</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content column-page-left" id="quarto-document-content">
 
-        <pre><code class="language-python">import pandas as pd
-import seaborn as sns
-import plotly.express as px
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Representation in Scikit-Learn</h1>
+</div>
 
-iris = sns.load_dataset('iris')
-</code></pre>
 
-        <table class="dataframe">
-            <thead>
-                <tr style="text-align: right;">
-                    <th>sepal_length</th>
-                    <th>sepal_width</th>
-                    <th>petal_length</th>
-                    <th>petal_width</th>
-                    <th>species</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>5.1</td>
-                    <td>3.5</td>
-                    <td>1.4</td>
-                    <td>0.2</td>
-                    <td>setosa</td>
-                </tr>
-                <tr>
-                    <td>4.9</td>
-                    <td>3.0</td>
-                    <td>1.4</td>
-                    <td>0.2</td>
-                    <td>setosa</td>
-                </tr>
-                <tr>
-                    <td>4.7</td>
-                    <td>3.2</td>
-                    <td>1.3</td>
-                    <td>0.2</td>
-                    <td>setosa</td>
-                </tr>
-                <tr>
-                    <td>4.6</td>
-                    <td>3.1</td>
-                    <td>1.5</td>
-                    <td>0.2</td>
-                    <td>setosa</td>
-                </tr>
-                <tr>
-                    <td>5.0</td>
-                    <td>3.6</td>
-                    <td>1.4</td>
-                    <td>0.2</td>
-                    <td>setosa</td>
-                </tr>
-            </tbody>
-        </table>
 
-        <p>Here each row of the data refers to a single observed flower, and the number of rows
-            is the total number of flowers in the dataset. In general, we will refer to the rows of
-            the matrix as samples, and the number of rows as n_samples. <br>
-            Likewise, each column of the data refers to a particular quantitative piece of information
-            that describes each sample. In general, we will refer to the columns of the matrix
-            as features, and the number of columns as n_features.</p>
+<div class="quarto-title-meta column-page-left">
 
-        <h4>The Features Matrix</h4>
-        <p>The table layout makes clear that the information can be thought of as a two-
-            dimensional numerical array or matrix, which we will call the features matrix. By convention,
-            this matrix is often stored in a variable named X. The features matrix is
-            assumed to be two-dimensional, with shape [n_samples, n_features], and is most
-            often contained in a NumPy array or a Pandas DataFrame, though some Scikit-Learn
-            models also accept SciPy sparse matrices.</p>
-        <p>The samples (i.e., rows) always refer to the individual objects described by the dataset.
-            For example, a sample might represent a flower, a person, a document, an image, a
-            sound file, a video, an astronomical object, or anything else you can describe with a
-            set of quantitative measurements.</p>
-        <p>The features (i.e., columns) always refer to the distinct observations that describe
-            each sample in a quantitative manner. Features are often real-valued, but may be
-            Boolean or discrete-valued in some cases.</p>
+    
+  
+    
+  </div>
+  
 
-        <h4>The Target Array</h4>
-        <p>In addition to the feature matrix X, we also generally work with a label or target array,
-            which by convention we will usually call y. The target array is usually one-
-            dimensional, with length n_samples, and is generally contained in a NumPy array or
-            Pandas Series. The target array may have continuous numerical values, or discrete
-            classes/labels. While some Scikit-Learn estimators do handle multiple target values in
-            the form of a two-dimensional, [n_samples, n_targets] target array, we will pri‐
-            marily be working with the common case of a one-dimensional target array.</p>
-        <p>A common point of confusion is how the target array differs from the other feature
-            columns. The distinguishing characteristic of the target array is that it is usually the
-            quantity we want to predict from the features: in statistical terms, it is the dependent
-            variable. For example, given the preceding data we may wish to construct a model
-            that can predict the species of flower based on the other measurements; in this case,
-            the species column would be considered the target array.</p>
 
-        <pre><code class="language-python">sns.pairplot(iris, hue='species', height=1.5);</code></pre>
-        <figure style="text-align:center;"><img src="./images/iris_pairplot.svg"></figure>
+</header>
 
-        <p>For use in Scikit-Learn, we will extract the features matrix and target array from the
-            DataFrame, which we can do using some of the Pandas DataFrame operations.</p>
-        <pre><code class="language-python">X_iris = iris.drop(columns="species")
-y_iris = iris['species']
-</code></pre>
 
-        <h3>Supervised Learning Example: Iris Classification</h3>
-        <p>For this task, we will use a simple generative model known as Gaussian naive Bayes,
-            which proceeds by assuming each class is drawn from an axis-aligned Gaussian dis‐
-            tribution. Because it is so fast and has no hyperpara‐
-            meters to choose, Gaussian naive Bayes is often a good model to use as a baseline
-            classification, before exploring whether improvements can be found through more
-            sophisticated models.</p>
-        <p>We would like to evaluate the model on data it has not seen before, so we will split the
-            data into a training set and a testing set. This could be done by hand, but it is more
-            convenient to use the train_test_split utility function:</p>
+<p>Machine learning is about creating models from data; for that reason, we’ll start by discussing how data can be represented. The best way to think about data within Scikit-Learn is in terms of tables. A basic table is a two-dimensional grid of data, in which the rows represent individual elements of the dataset, and the columns represent quantities related to each of these elements. For example, consider the Iris dataset, famously analyzed by Ronald Fisher in 1936. We can download this dataset in the form of a Pandas DataFrame using the Seaborn library.</p>
+<div id="0b14c8d6" class="cell" data-execution_count="113">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'retina'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3c67b5bb" class="cell" data-execution_count="134">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>iris <span class="op">=</span> sns.load_dataset(<span class="st">'iris'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>iris.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="134">
+<div>
 
-        <pre><code class="language-python">from sklearn.model_selection import train_test_split
-Xtrain, Xtest, ytrain, ytest = train_test_split(X_iris, y_iris, random_state=1)</code></pre>
 
-        <p>With the data arranged, we can follow our recipe to predict the labels:</p>
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sepal_length</th>
+<th data-quarto-table-cell-role="th">sepal_width</th>
+<th data-quarto-table-cell-role="th">petal_length</th>
+<th data-quarto-table-cell-role="th">petal_width</th>
+<th data-quarto-table-cell-role="th">species</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>5.1</td>
+<td>3.5</td>
+<td>1.4</td>
+<td>0.2</td>
+<td>setosa</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>4.9</td>
+<td>3.0</td>
+<td>1.4</td>
+<td>0.2</td>
+<td>setosa</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>4.7</td>
+<td>3.2</td>
+<td>1.3</td>
+<td>0.2</td>
+<td>setosa</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>4.6</td>
+<td>3.1</td>
+<td>1.5</td>
+<td>0.2</td>
+<td>setosa</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>5.0</td>
+<td>3.6</td>
+<td>1.4</td>
+<td>0.2</td>
+<td>setosa</td>
+</tr>
+</tbody>
+</table>
 
-        <pre><code class="language-python">from sklearn.naive_bayes import GaussianNB
-model = GaussianNB() 
-model.fit(Xtrain, ytrain) 
-y_model = model.predict(Xtest) </code></pre>
+</div>
+</div>
+</div>
+<p>Here each row of the data refers to a single observed flower, and the number of rows is the total number of flowers in the dataset. In general, we will refer to the rows of the matrix as samples, and the number of rows as n_samples.<br>
+Likewise, each column of the data refers to a particular quantitative piece of information that describes each sample. In general, we will refer to the columns of the matrix as features, and the number of columns as n_features.</p>
+<section id="the-features-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="the-features-matrix">The Features Matrix</h3>
+<p>The table layout makes clear that the information can be thought of as a two- dimensional numerical array or matrix, which we will call the features matrix. By convention, this matrix is often stored in a variable named X. The features matrix is assumed to be two-dimensional, with shape [n_samples, n_features], and is most often contained in a NumPy array or a Pandas DataFrame, though some Scikit-Learn models also accept SciPy sparse matrices.</p>
+<p>The samples (i.e., rows) always refer to the individual objects described by the dataset. For example, a sample might represent a flower, a person, a document, an image, a sound file, a video, an astronomical object, or anything else you can describe with a set of quantitative measurements.</p>
+<p>The features (i.e., columns) always refer to the distinct observations that describe each sample in a quantitative manner. Features are often real-valued, but may be Boolean or discrete-valued in some cases.</p>
+</section>
+<section id="the-target-array" class="level3">
+<h3 class="anchored" data-anchor-id="the-target-array">The Target Array</h3>
+<p>In addition to the feature matrix X, we also generally work with a label or target array, which by convention we will usually call y. The target array is usually one- dimensional, with length n_samples, and is generally contained in a NumPy array or Pandas Series. The target array may have continuous numerical values, or discrete classes/labels. While some Scikit-Learn estimators do handle multiple target values in the form of a two-dimensional, [n_samples, n_targets] target array, we will pri‐ marily be working with the common case of a one-dimensional target array.</p>
+<p>A common point of confusion is how the target array differs from the other feature columns. The distinguishing characteristic of the target array is that it is usually the quantity we want to predict from the features: in statistical terms, it is the dependent variable. For example, given the preceding data we may wish to construct a model that can predict the species of flower based on the other measurements; in this case, the species column would be considered the target array.</p>
+<div id="e8b0b544" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sns.pairplot(iris, hue<span class="op">=</span><span class="st">'species'</span>, height<span class="op">=</span><span class="fl">1.5</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_files/figure-html/cell-4-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="717" height="594"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For use in Scikit-Learn, we will extract the features matrix and target array from the DataFrame, which we can do using some of the Pandas DataFrame operations.</p>
+<div id="8223083c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_iris <span class="op">=</span> iris.drop(columns<span class="op">=</span><span class="st">"species"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>y_iris <span class="op">=</span> iris[<span class="st">'species'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="supervised-learning-example-iris-classification" class="level3">
+<h3 class="anchored" data-anchor-id="supervised-learning-example-iris-classification">Supervised Learning Example: Iris Classification</h3>
+<p>For this task, we will use a simple generative model known as Gaussian naive Bayes, which proceeds by assuming each class is drawn from an axis-aligned Gaussian dis‐ tribution. Because it is so fast and has no hyperpara‐ meters to choose, Gaussian naive Bayes is often a good model to use as a baseline classification, before exploring whether improvements can be found through more sophisticated models.</p>
+<p>We would like to evaluate the model on data it has not seen before, so we will split the data into a training set and a testing set. This could be done by hand, but it is more convenient to use the train_test_split utility function:</p>
+<div id="ab22ebc9" class="cell" data-execution_count="117">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Xtrain, Xtest, ytrain, ytest <span class="op">=</span> train_test_split(X_iris, y_iris, random_state<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With the data arranged, we can follow our recipe to predict the labels:</p>
+<div id="8f16feec" class="cell" data-execution_count="118">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> GaussianNB() </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>model.fit(Xtrain, ytrain) </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>y_model <span class="op">=</span> model.predict(Xtest) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finally, we can use the accuracy_score utility to see the fraction of predicted labels that match their true values:</p>
+<div id="b82e2e2d" class="cell" data-execution_count="119">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>accuracy_score(ytest, y_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="119">
+<pre><code>0.9736842105263158</code></pre>
+</div>
+</div>
+<p>With an accuracy topping 97%, we see that even this very naive classification algo‐ rithm is effective for this particular dataset.</p>
+</section>
+<section id="unsupervised-learning-example-iris-dimensionality" class="level3">
+<h3 class="anchored" data-anchor-id="unsupervised-learning-example-iris-dimensionality">Unsupervised Learning Example: Iris Dimensionality</h3>
+<p>As an example of an unsupervised learning problem, let’s take a look at reducing the dimensionality of the Iris data so as to more easily visualize it. Recall that the Iris data is four-dimensional: there are four features recorded for each sample.</p>
+<p>The task of dimensionality reduction centers around determining whether there is a suitable lower-dimensional representation that retains the essential features of the data. Often dimensionality reduction is used as an aid to visualizing data: after all, it is much easier to plot data in two dimensions than in four dimensions or more!</p>
+<p>Here we will use principal component analysis, which is a fast linear dimensionality reduction technique. We will ask the model to return two com‐ ponents—that is, a two-dimensional representation of the data.</p>
+<div id="0d1452f2" class="cell" data-execution_count="120">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>) </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_iris) </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>X_2D <span class="op">=</span> model.transform(X_iris) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now let’s plot the results. A quick way to do this is to insert the results into the origi‐ nal Iris DataFrame, and use Seaborn’s lmplot to show the results.</p>
+<div id="bb93c7f5" class="cell" data-execution_count="137">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'PCA1'</span>] <span class="op">=</span> X_2D[:, <span class="dv">0</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'PCA2'</span>] <span class="op">=</span> X_2D[:, <span class="dv">1</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>px.scatter(iris, <span class="st">"PCA1"</span>, <span class="st">"PCA2"</span>, color<span class="op">=</span><span class="st">"species"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="a6ec32c8-2472-4e9b-96f0-2b8c739cf24b" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("a6ec32c8-2472-4e9b-96f0-2b8c739cf24b")) {                    Plotly.newPlot(                        "a6ec32c8-2472-4e9b-96f0-2b8c739cf24b",                        [{"hovertemplate":"species=setosa\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"setosa","marker":{"color":"#636efa","symbol":"circle"},"mode":"markers","name":"setosa","orientation":"v","showlegend":true,"x":{"dtype":"f8","bdata":"Sygv2xZ5BcBuHb3qj7YFwCp\u002fZBanHAfA9EuqUHb2BcDccuRVadQFwFOrzlUzPwLAsIOkGHaQBsCvwbFLWAIFwI3kZdRPFwfA1q6uys1hBcBqN7lGOg4EwKSl6Tbs5gTAceGqp\u002fNJBsCnAAWeWcoJwPYSd+RyKAXAHff\u002foZsWA8C+3cEu\u002fPwEwJK8+y62LwXA7RvYZTuZAcDRxq82MrQEwFrHTpxnewLAz2iBIIJZBMBmBsFxProJwLya6F\u002f\u002fawLA1D8zlJXYAsDxK4ltqA0EwKEdDr0kwAPAaAM4lKF\u002fBMC63XlgxB0FwFoZrnNQDgXAys74+P2yBMAdiWGwikcDwNYcTbzeMAXAKWcifjbKBMAcQ3sebRgFwO5CchoQ7gbAxpOCznwABcDdNtISzWcGwHCjnXQR2AfAaGn3OlW4BMB04fJ1KykGwHM\u002f09GBywbAAYiTSLD6B8B2OKLOsj4DwKwoibEIrQHA\u002fglETzK3BcDvZaasIE4EwNgK4vA3twbAso9zVz1YBMABnPMXe6AFwA=="},"xaxis":"x","y":{"dtype":"f8","bdata":"AP0gJgFx1D+gqoDk+afGvwBETuqzjcK\u002fwC2PrgJf1L+QDrjCi+nUP5AiSKL6uOc\u002fABnO+PDmtr\u002fgAkhhzOnEPzj646aHgeK\u002fwAsoGU8gvb9YmOuHZ6TkPwDswve6Ko4\u002fYLzhZyYYzr84Z1EuWF3gvxDksk443PI\u002fMEnRC7Ro9T\u002foQh4qFvHpP\u002fAYVB1W9dM\u002fwHjgIkzu6z8gQlMHFm\u002fgP9CUw9LPC9k\u002fsCHFHjW22z8AN91QexXBP0CNQMf7RLk\u002fAMkYoJsWo79AETJfrrDCv0BSPrYEw8A\u002f0FmzrLSI1z9w64mJdvjTPwCl0IEGNsm\u002fIMj+uhsnyr8Q7f9IlUzaP1ia\u002fY8TB+o\u002fiIlpaIZ98T\u002fAm1s8+w6\u002fv8DT8LjewbE\u002feOAACgou4z+ghQeBdTHRP8BlyKK1Ot+\u002fwNxC9k5RzT8wvMGWot3QPyipU1lZHO6\u002fwGif1B3i1b8gvzNh8CzIP4BfLfZJ8ts\u002fQKaKRWkD0L8QLMSp5B7gP0A+HwdSLc2\u002f2OGs4oaK4j+ATOo1oJK7Pw=="},"yaxis":"y","type":"scatter"},{"hovertemplate":"species=versicolor\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"versicolor","marker":{"color":"#EF553B","symbol":"circle"},"mode":"markers","name":"versicolor","orientation":"v","showlegend":true,"x":{"dtype":"f8","bdata":"FFGrYaWO9D+ApcUw8tbtP\u002fSOhkXIbfc\u002fAM\u002f\u002fffR2xz\u002fIrij23mjxP2jEd5qNiOQ\u002fgEdSVF6F8T\u002fAifMa0Pjnv+DL2ZLDtPA\u002fAOw1RBzpgb9An3SGO0Dgv+i6NKfVX+A\u002fkCsjB2D10D94k+VglYTvP4CuqMMvQ8a\u002fsLCsFwmx7T\u002fILlJpCyHlPwBhXDywOM4\u002fmL4oOkI77j8AJjOA\u002fSenP\u002fCxvL9L3PE\u002foJm60qTn1j8Ax410XMX0P9D+NafNfu0\u002fSD4HFRTg5j+wGK98Os7sP2wbE9v4T\u002fU\u002fhFra88Hs+D9wfOMcegbqP3BcM0OvjtO\u002fQMBs37xwsb9g5bmWjEXIvwBFMPt+dsE\u002fDPadmZYU9j+QbH\u002fj8tDiP6g9FobI0ek\u002fbPupKfOH8z9oxpeaQhXqP2AdqI+Ke88\u002fAIahPgdNxT9AZne1Sb\u002fdP+iXBuCOgew\u002fQDOs\u002fpiCzT+AXx4whovmv1AqQenI2NY\u002f8NfxHWo+1T8QyGTP6hPYPwh8NI\u002f7j+Q\u002fAHkYF80B7b9w9VVt1CLTPw=="},"xaxis":"x","y":{"dtype":"f8","bdata":"qGilptXs5T8AgGMNlF\u002fUP8DwisXrIuA\u002f6FbG5aN+6r9Ai4\u002feXxizP2CswoaOxNq\u002fMI1XGVgk0j\u002fsJ2WLCBTwv8Asn3X2Os0\u002fUGfKqXwj579A088Ba0H0v8C03aWDnrq\u002fwK\u002fjEeaZ4b9A+m0ZEPS\u002fv2AJ6AaIT9C\u002fgDx\u002f0kTm3T+A5LAUDpfWvzDRRvngWdW\u002fWCUyx3Jh4b\u002fgtbBuxa7ivwD13TRzqbW\u002fQJ\u002fWJBKlsb8Ao1Wed\u002frUvwBqrLfzY8e\u002fANor40MUwz8QUe2gNwbVP8DaJbDWSc8\u002f8LCBOaUe0T9gXp+jqejEv5BbVpObkde\u002fgCOEJcWQ5r9gKSi\u002f6MTlvwB5CoMbGdS\u002fMPFHQOrw2r9AvqupkP7ev2DKk1H32sg\u002f8CfxfXAW2j8Qh02HdM\u002fXv8DbavOAL9G\u002fcNix\u002flfS5b+IR5cOeHblvwB\u002f39pSpaG\u002fkAcKLnXh2b9Q7IoyKzLwv7CzSTY5KOC\u002f4DUXyEQ4y79w\u002fexTGcTSvwAyscn1KZI\u002feH1It+ox6L\u002fAaxZ3V1TWvw=="},"yaxis":"y","type":"scatter"},{"hovertemplate":"species=virginica\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"virginica","marker":{"color":"#00cc96","symbol":"circle"},"mode":"markers","name":"virginica","orientation":"v","showlegend":true,"x":{"dtype":"f8","bdata":"JFEO+eE\u002fBEBIG+lfzqT2P7hux9Xz7gRAjOs9JWSL\u002fz8q\u002fF\u002fnz8wCQFjAFKUiLQtAcNImPu+t4D\u002fQAJA18HUHQD657WngkQJAaGHnh4FVB0DQT7N+oJb6PxRxmAG82vw\u002feDOlyiFTAUAcck3S4on1P\u002fhr9UX2X\u002fk\u002fCFhmP6d4\u002fj\u002fkzrcn7TH\u002fP7S+Z0h95QtACB\u002fYWHtdDkA8\u002fIr4CtD0P9YXSswrbANApHp9yBsv8z8YXs4T1v8LQDyE1tViOPY\u002fjJ1z6BQ0AkDcay5EqOkEQOBV8nPZIvQ\u002faHULF3qo9D+Eg+6RJv0AQMTfQ1OhGgNA5B3\u002f7767BkAAMr9ua9gJQD7vIT6HRgFAtEuf0Ugb9z9Q2pr8LoD8PxDxBf+rnAhAtMDsCWknAUDEOU0ySHv+P6ArHYmPtfI\u002f3MwnO2PcAECu+MaKY4MCQPh8sOGbwf4\u002fSBvpX86k9j\u002fEWAkoDYEEQHJMQZmXWQNApJk23xIb\u002fz8EvqJCRm\u002f4PyyyGJPCOvw\u002f\u002fMYKwUFq\u002fj+wRhWtNj72Pw=="},"xaxis":"x","y":{"dtype":"f8","bdata":"ACyJGcUrhL+Yu9T3tmXiv\u002fBCAF2CAtY\u002foIyv71IBx78A9JA2FZ2kv0D5Ajt0oOE\u002f3MfHLIoV87\u002fQCaEVg8DWP8BZFOTeNc+\u002fMHt3s6EM6T+AL7woVwHPP8ATHnEDmsu\u002foHloGuuuyz+A2pgmstvov3i2Spq8ROG\u002fgHmPnjaHvj+AERVBlnmlP8TXGwvUz\u002fI\u002f8GzWxvp30D+4Ont7Vlvov2C+agxdNNg\u002fKEtDDxpl479gNjw3r3vdP2CkJtXBKcq\u002fECsecHxw1T9wJBFm5\u002fLhP+BgIhSRAMe\u002fQMJCKf\u002fdvb8ACKtdatjKv1A0aZeovN0\u002fsDQT+GgE2D9kTLGHlPz1PyDQRG\u002fAz8u\u002fwI\u002fc4V5bwr9wi9yeY\u002f7fvxh0QEHMBOY\u002foLOCrZ\u002ftwT+Anc0l6z2pP8AaxqFmHsW\u002fcDixgpDT1z9AJPOW4oHHP+Cg2LxjMNo\u002fmLvU97Zl4r8gMRc6gMjRP+Ca6kzQgdM\u002fwHC8+Q4ByD9QQ3SFMQXYv4AqKAkYMLQ\u002fAMWbc1TbvT\u002fAqiHnHRfSvw=="},"yaxis":"y","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"PCA1"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"PCA2"}},"legend":{"title":{"text":"species"},"tracegroupgap":0},"margin":{"t":60}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('a6ec32c8-2472-4e9b-96f0-2b8c739cf24b');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
 
-        <p>Finally, we can use the accuracy_score utility to see the fraction of predicted labels
-            that match their true values:</p>
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
 
-        <pre><code class="language-python">from sklearn.metrics import accuracy_score
-accuracy_score(ytest, y_model) # output: 0.9736842105263158</code></pre>
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
 
-        <p>With an accuracy topping 97%, we see that even this very naive classification algo‐
-            rithm is effective for this particular dataset.</p>
+                        })                };            </script>        </div>
+</div>
+</div>
+<p>We see that in the two-dimensional representation, the species are fairly well separa‐ ted, even though the PCA algorithm had no knowledge of the species labels! This suggests to us that a relatively straightforward classification will probably be effective on the dataset, as we saw before.</p>
+</section>
+<section id="unsupervised-learning-example-iris-clustering" class="level3">
+<h3 class="anchored" data-anchor-id="unsupervised-learning-example-iris-clustering">Unsupervised Learning Example: Iris Clustering</h3>
+<p>Let’s next look at applying clustering to the Iris data. A clustering algorithm attempts to find distinct groups of data without reference to any labels. Here we will use a powerful clustering method called a Gaussian mixture model (GMM). A GMM attempts to model the data as a collection of Gaussian blobs.</p>
+<p>We can fit the Gaussian mixture model as follows:</p>
+<div id="36a6828b" class="cell" data-execution_count="136">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.mixture <span class="im">import</span> GaussianMixture </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> GaussianMixture(n_components<span class="op">=</span><span class="dv">3</span>, covariance_type<span class="op">=</span><span class="st">'full'</span>) </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_iris) </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>y_gmm <span class="op">=</span> model.predict(X_iris) </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'cluster'</span>] <span class="op">=</span> y_gmm</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>px.scatter(iris, <span class="st">"PCA1"</span>, <span class="st">"PCA2"</span>, facet_col<span class="op">=</span><span class="st">"cluster"</span>, color<span class="op">=</span><span class="st">"species"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="aae6186d-99b0-4257-a894-3da59a0c987d" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("aae6186d-99b0-4257-a894-3da59a0c987d")) {                    Plotly.newPlot(                        "aae6186d-99b0-4257-a894-3da59a0c987d",                        [{"hovertemplate":"species=setosa\u003cbr\u003ecluster=1\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"setosa","marker":{"color":"#636efa","symbol":"circle"},"mode":"markers","name":"setosa","orientation":"v","showlegend":true,"x":{"dtype":"f8","bdata":"Sygv2xZ5BcBuHb3qj7YFwCp\u002fZBanHAfA9EuqUHb2BcDccuRVadQFwFOrzlUzPwLAsIOkGHaQBsCvwbFLWAIFwI3kZdRPFwfA1q6uys1hBcBqN7lGOg4EwKSl6Tbs5gTAceGqp\u002fNJBsCnAAWeWcoJwPYSd+RyKAXAHff\u002foZsWA8C+3cEu\u002fPwEwJK8+y62LwXA7RvYZTuZAcDRxq82MrQEwFrHTpxnewLAz2iBIIJZBMBmBsFxProJwLya6F\u002f\u002fawLA1D8zlJXYAsDxK4ltqA0EwKEdDr0kwAPAaAM4lKF\u002fBMC63XlgxB0FwFoZrnNQDgXAys74+P2yBMAdiWGwikcDwNYcTbzeMAXAKWcifjbKBMAcQ3sebRgFwO5CchoQ7gbAxpOCznwABcDdNtISzWcGwHCjnXQR2AfAaGn3OlW4BMB04fJ1KykGwHM\u002f09GBywbAAYiTSLD6B8B2OKLOsj4DwKwoibEIrQHA\u002fglETzK3BcDvZaasIE4EwNgK4vA3twbAso9zVz1YBMABnPMXe6AFwA=="},"xaxis":"x","y":{"dtype":"f8","bdata":"AP0gJgFx1D+gqoDk+afGvwBETuqzjcK\u002fwC2PrgJf1L+QDrjCi+nUP5AiSKL6uOc\u002fABnO+PDmtr\u002fgAkhhzOnEPzj646aHgeK\u002fwAsoGU8gvb9YmOuHZ6TkPwDswve6Ko4\u002fYLzhZyYYzr84Z1EuWF3gvxDksk443PI\u002fMEnRC7Ro9T\u002foQh4qFvHpP\u002fAYVB1W9dM\u002fwHjgIkzu6z8gQlMHFm\u002fgP9CUw9LPC9k\u002fsCHFHjW22z8AN91QexXBP0CNQMf7RLk\u002fAMkYoJsWo79AETJfrrDCv0BSPrYEw8A\u002f0FmzrLSI1z9w64mJdvjTPwCl0IEGNsm\u002fIMj+uhsnyr8Q7f9IlUzaP1ia\u002fY8TB+o\u002fiIlpaIZ98T\u002fAm1s8+w6\u002fv8DT8LjewbE\u002feOAACgou4z+ghQeBdTHRP8BlyKK1Ot+\u002fwNxC9k5RzT8wvMGWot3QPyipU1lZHO6\u002fwGif1B3i1b8gvzNh8CzIP4BfLfZJ8ts\u002fQKaKRWkD0L8QLMSp5B7gP0A+HwdSLc2\u002f2OGs4oaK4j+ATOo1oJK7Pw=="},"yaxis":"y","type":"scatter"},{"hovertemplate":"species=versicolor\u003cbr\u003ecluster=2\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"versicolor","marker":{"color":"#EF553B","symbol":"circle"},"mode":"markers","name":"versicolor","orientation":"v","showlegend":true,"x":{"dtype":"f8","bdata":"FFGrYaWO9D+ApcUw8tbtP\u002fSOhkXIbfc\u002fAM\u002f\u002fffR2xz\u002fIrij23mjxP2jEd5qNiOQ\u002fgEdSVF6F8T\u002fAifMa0Pjnv+DL2ZLDtPA\u002fAOw1RBzpgb9An3SGO0Dgv+i6NKfVX+A\u002fkCsjB2D10D94k+VglYTvP4CuqMMvQ8a\u002fsLCsFwmx7T\u002fILlJpCyHlPwBhXDywOM4\u002fACYzgP0npz+gmbrSpOfWP9D+NafNfu0\u002fSD4HFRTg5j+wGK98Os7sP2wbE9v4T\u002fU\u002fcHzjHHoG6j9wXDNDr47Tv0DAbN+8cLG\u002fYOW5loxFyL8ARTD7fnbBP5Bsf+Py0OI\u002fqD0WhsjR6T9s+6kp84fzP2jGl5pCFeo\u002fYB2oj4p7zz8AhqE+B03FP0Bmd7VJv90\u002f6JcG4I6B7D9AM6z+mILNP4BfHjCGi+a\u002fUCpB6cjY1j\u002fw1\u002fEdaj7VPxDIZM\u002fqE9g\u002fCHw0j\u002fuP5D8AeRgXzQHtv3D1VW3UItM\u002f"},"xaxis":"x2","y":{"dtype":"f8","bdata":"qGilptXs5T8AgGMNlF\u002fUP8DwisXrIuA\u002f6FbG5aN+6r9Ai4\u002feXxizP2CswoaOxNq\u002fMI1XGVgk0j\u002fsJ2WLCBTwv8Asn3X2Os0\u002fUGfKqXwj579A088Ba0H0v8C03aWDnrq\u002fwK\u002fjEeaZ4b9A+m0ZEPS\u002fv2AJ6AaIT9C\u002fgDx\u002f0kTm3T+A5LAUDpfWvzDRRvngWdW\u002f4LWwbsWu4r9An9YkEqWxvwBqrLfzY8e\u002fANor40MUwz8QUe2gNwbVP8DaJbDWSc8\u002fYF6fo6noxL+QW1aTm5HXv4AjhCXFkOa\u002fYCkov+jE5b8AeQqDGxnUv0C+q6mQ\u002ft6\u002fYMqTUffayD\u002fwJ\u002fF9cBbaPxCHTYd0z9e\u002fwNtq84Av0b9w2LH+V9Llv4hHlw54duW\u002fAH\u002ff2lKlob+QBwoudeHZv1DsijIrMvC\u002fsLNJNjko4L\u002fgNRfIRDjLv3D97FMZxNK\u002fADKxyfUpkj94fUi36jHov8BrFndXVNa\u002f"},"yaxis":"y2","type":"scatter"},{"hovertemplate":"species=versicolor\u003cbr\u003ecluster=0\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"versicolor","marker":{"color":"#EF553B","symbol":"circle"},"mode":"markers","name":"versicolor","orientation":"v","showlegend":false,"x":{"dtype":"f8","bdata":"mL4oOkI77j\u002fwsby\u002fS9zxPwDHjXRcxfQ\u002fhFra88Hs+D8M9p2ZlhT2Pw=="},"xaxis":"x3","y":{"dtype":"f8","bdata":"WCUyx3Jh4b8A9d00c6m1vwCjVZ53+tS\u002f8LCBOaUe0T8w8UdA6vDavw=="},"yaxis":"y3","type":"scatter"},{"hovertemplate":"species=virginica\u003cbr\u003ecluster=0\u003cbr\u003ePCA1=%{x}\u003cbr\u003ePCA2=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"virginica","marker":{"color":"#00cc96","symbol":"circle"},"mode":"markers","name":"virginica","orientation":"v","showlegend":true,"x":{"dtype":"f8","bdata":"JFEO+eE\u002fBEBIG+lfzqT2P7hux9Xz7gRAjOs9JWSL\u002fz8q\u002fF\u002fnz8wCQFjAFKUiLQtAcNImPu+t4D\u002fQAJA18HUHQD657WngkQJAaGHnh4FVB0DQT7N+oJb6PxRxmAG82vw\u002feDOlyiFTAUAcck3S4on1P\u002fhr9UX2X\u002fk\u002fCFhmP6d4\u002fj\u002fkzrcn7TH\u002fP7S+Z0h95QtACB\u002fYWHtdDkA8\u002fIr4CtD0P9YXSswrbANApHp9yBsv8z8YXs4T1v8LQDyE1tViOPY\u002fjJ1z6BQ0AkDcay5EqOkEQOBV8nPZIvQ\u002faHULF3qo9D+Eg+6RJv0AQMTfQ1OhGgNA5B3\u002f7767BkAAMr9ua9gJQD7vIT6HRgFAtEuf0Ugb9z9Q2pr8LoD8PxDxBf+rnAhAtMDsCWknAUDEOU0ySHv+P6ArHYmPtfI\u002f3MwnO2PcAECu+MaKY4MCQPh8sOGbwf4\u002fSBvpX86k9j\u002fEWAkoDYEEQHJMQZmXWQNApJk23xIb\u002fz8EvqJCRm\u002f4PyyyGJPCOvw\u002f\u002fMYKwUFq\u002fj+wRhWtNj72Pw=="},"xaxis":"x3","y":{"dtype":"f8","bdata":"ACyJGcUrhL+Yu9T3tmXiv\u002fBCAF2CAtY\u002foIyv71IBx78A9JA2FZ2kv0D5Ajt0oOE\u002f3MfHLIoV87\u002fQCaEVg8DWP8BZFOTeNc+\u002fMHt3s6EM6T+AL7woVwHPP8ATHnEDmsu\u002foHloGuuuyz+A2pgmstvov3i2Spq8ROG\u002fgHmPnjaHvj+AERVBlnmlP8TXGwvUz\u002fI\u002f8GzWxvp30D+4Ont7Vlvov2C+agxdNNg\u002fKEtDDxpl479gNjw3r3vdP2CkJtXBKcq\u002fECsecHxw1T9wJBFm5\u002fLhP+BgIhSRAMe\u002fQMJCKf\u002fdvb8ACKtdatjKv1A0aZeovN0\u002fsDQT+GgE2D9kTLGHlPz1PyDQRG\u002fAz8u\u002fwI\u002fc4V5bwr9wi9yeY\u002f7fvxh0QEHMBOY\u002foLOCrZ\u002ftwT+Anc0l6z2pP8AaxqFmHsW\u002fcDixgpDT1z9AJPOW4oHHP+Cg2LxjMNo\u002fmLvU97Zl4r8gMRc6gMjRP+Ca6kzQgdM\u002fwHC8+Q4ByD9QQ3SFMQXYv4AqKAkYMLQ\u002fAMWbc1TbvT\u002fAqiHnHRfSvw=="},"yaxis":"y3","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,0.31999999999999995],"title":{"text":"PCA1"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"PCA2"}},"xaxis2":{"anchor":"y2","domain":[0.33999999999999997,0.6599999999999999],"matches":"x","title":{"text":"PCA1"}},"yaxis2":{"anchor":"x2","domain":[0.0,1.0],"matches":"y","showticklabels":false},"xaxis3":{"anchor":"y3","domain":[0.6799999999999999,0.9999999999999999],"matches":"x","title":{"text":"PCA1"}},"yaxis3":{"anchor":"x3","domain":[0.0,1.0],"matches":"y","showticklabels":false},"annotations":[{"font":{},"showarrow":false,"text":"cluster=1","x":0.15999999999999998,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{},"showarrow":false,"text":"cluster=2","x":0.49999999999999994,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{},"showarrow":false,"text":"cluster=0","x":0.8399999999999999,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"}],"legend":{"title":{"text":"species"},"tracegroupgap":0},"margin":{"t":60}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('aae6186d-99b0-4257-a894-3da59a0c987d');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
 
-        <h3>Unsupervised Learning Example: Iris Dimensionality</h3>
-        <p>As an example of an unsupervised learning problem, let’s take a look at reducing the
-            dimensionality of the Iris data so as to more easily visualize it. Recall that the Iris data
-            is four-dimensional: there are four features recorded for each sample.</p>
-        <p>The task of dimensionality reduction centers around determining whether there is a
-            suitable lower-dimensional representation that retains the essential features of the
-            data. Often dimensionality reduction is used as an aid to visualizing data: after all, it
-            is much easier to plot data in two dimensions than in four dimensions or more!</p>
-        <p>Here we will use principal component analysis, which is a fast
-            linear dimensionality reduction technique. We will ask the model to return two com‐
-            ponents—that is, a two-dimensional representation of the data.</p>
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
 
-        <pre><code class="language-python">from sklearn.decomposition import PCA
-model = PCA(n_components=2) 
-model.fit(X_iris) 
-X_2D = model.transform(X_iris)</code></pre>
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
 
-        <p>Now let’s plot the results. A quick way to do this is to insert the results into the origi‐
-            nal Iris DataFrame, and use Seaborn’s lmplot to show the results.</p>
+                        })                };            </script>        </div>
+</div>
+</div>
+<p>By splitting the data by cluster number, we see exactly how well the GMM algorithm has recovered the underlying labels: the setosa species is separated perfectly within cluster 0, while there remains a small amount of mixing between versicolor and vir‐ ginica. This means that even without an expert to tell us the species labels of the indi‐ vidual flowers, the measurements of these flowers are distinct enough that we could automatically identify the presence of these different groups of species with a simple clustering algorithm! This sort of algorithm might further give experts in the field clues as to the relationships between the samples they are observing.</p>
+</section>
+<section id="application-exploring-handwritten-digits" class="level3">
+<h3 class="anchored" data-anchor-id="application-exploring-handwritten-digits">Application: Exploring Handwritten Digits</h3>
+<p>To demonstrate these principles on a more interesting problem, let’s consider one piece of the optical character recognition problem: the identification of handwritten digits. In the wild, this problem involves both locating and identifying characters in an image. Here we’ll take a shortcut and use Scikit-Learn’s set of preformatted digits, which is built into the library.</p>
+</section>
+<section id="loading-and-visualizing-the-digits-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-and-visualizing-the-digits-data">Loading and Visualizing the Digits Data</h3>
+<p>We can use Scikit-Learn’s data access interface to take a look at this data:</p>
+<div id="a0e14776" class="cell" data-execution_count="125">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_digits</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>digits <span class="op">=</span> load_digits()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The images data is a three-dimensional array: 1,797 samples each consisting of an 8 × 8 grid of pixels. Let’s visualize the first hundred of these</p>
+<div id="a1900f96" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">10</span>, <span class="dv">10</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                         subplot_kw<span class="op">=</span>{<span class="st">'xticks'</span>:[], <span class="st">'yticks'</span>:[]},</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                         gridspec_kw<span class="op">=</span><span class="bu">dict</span>(hspace<span class="op">=</span><span class="fl">0.1</span>, wspace<span class="op">=</span><span class="fl">0.1</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">enumerate</span>(axes.flat):</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    ax.imshow(digits.images[i], cmap<span class="op">=</span><span class="st">'binary'</span>, interpolation<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    ax.text(<span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="bu">str</span>(digits.target[i]),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            transform<span class="op">=</span>ax.transAxes, color<span class="op">=</span><span class="st">'green'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_files/figure-html/cell-13-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="639" height="636"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In order to work with this data within Scikit-Learn, we need a two-dimensional, [n_samples, n_features] representation. We can accomplish this by treating each pixel in the image as a feature: that is, by flattening out the pixel arrays so that we have a length-64 array of pixel values representing each digit. Additionally, we need the target array, which gives the previously determined label for each digit. These two quantities are built into the digits dataset under the data and target attributes, respectively:</p>
+<div id="b7b7fb42" class="cell" data-execution_count="127">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> digits.data</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> digits.target</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="unsupervised-learning-example-dimensionality-reduction" class="level3">
+<h3 class="anchored" data-anchor-id="unsupervised-learning-example-dimensionality-reduction">Unsupervised Learning Example: Dimensionality Reduction</h3>
+<p>We’d like to visualize our points within the 64-dimensional parameter space, but it’s difficult to effectively visualize points in such a high-dimensional space. Instead, we’ll reduce the number of dimensions, using an unsupervised method. Here, we’ll make use of a manifold learning algorithm called Isomap and transform the data to two dimensions:</p>
+<div id="60c33009" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.manifold <span class="im">import</span> Isomap</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>iso <span class="op">=</span> Isomap(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>iso.fit(digits.data)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>data_projected <span class="op">=</span> iso.transform(digits.data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We see that the projected data is now two-dimensional. Let’s plot this data to see if we can learn anything from its structure</p>
+<div id="e83b1257" class="cell" data-execution_count="129">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>px.scatter(x<span class="op">=</span>data_projected[:,<span class="dv">0</span>], y<span class="op">=</span>data_projected[:,<span class="dv">1</span>], color<span class="op">=</span>y, labels<span class="op">=</span>{</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"color"</span>:<span class="st">"digit label"</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="1b91b883-378f-44c6-96a5-5c14c0edbf4d" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("1b91b883-378f-44c6-96a5-5c14c0edbf4d")) {                    Plotly.newPlot(                        "1b91b883-378f-44c6-96a5-5c14c0edbf4d",                        [{"hovertemplate":"x=%{x}\u003cbr\u003ey=%{y}\u003cbr\u003edigit label=%{marker.color}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":{"dtype":"i1","bdata":"AAECAwQFBgcICQABAgMEBQYHCAkAAQIDBAUGBwgJAAkFBQYFAAkICQgEAQcHAwUBAAACAgcIAgABAgYDAwcDAwQGBgYECQEFAAkFAggCAAABBwYDAgEHBAYDAQMJAQcGCAQDAQQABQMGCQYBBwUEBAcCCAICBQcJBQQICAQJAAgJCAABAgMEBQYHCAkAAQIDBAUGBwgJAAECAwQFBgcICQAJBQUGBQAJCAkIBAEHBwMFAQAAAgIHCAIAAQIGAwMHAwMEBgYGBAkBBQAJBQIIAgAAAQcGAwIBBwMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwIIAgIFBQQICAQJAAgJCAABAgMEBQYHCAkAAQIDBAUGBwgJAAECAwQFBgcICQAJBQUGBQAJCAkIBAEHBwMFAQAAAgIHCAIAAQIGAwMHAwMEBgYGBAkBBQAJBQIIAgAAAQcGAwIBBwQGAwEDCQEHBggEAwEEAAUDBgkGAQcFBAQHAggCAgUHCQUECAgECQAICQMAAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAkACQUFBgUACQgJCAQBBwcDBQEAAAICBwgCAAECBgMDBwMDBAYGBgQJAQUACQUCCAIAAAEHBgMCAQcEBgMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwIIAgIFBwkFBAgIBAkACAkIAAECAwQFBgcICQABAgMEBQYHCAkAAQIDBAUGBwgJAAkFBQYFAAkICQgEAQcHAwUBAAACAgcIAgABAgYDAwcDAwQGBgYECQEFAAkFAggCAAABBwYDAgEHBAYDAQMJAQcGCAQDAQQABQMGCQYBBwUEBAcCCAICBQcJBQQICAQJAAgJCAABAgMEBQYHCAkAAQIDBAUGBwgJAAECAwQFBgcICQAJBQUGBQAJCAkIBAEHBwMFAQAAAgIHCAIAAQIGAwMHAwMEBgYGBAkBBQAJBQIIAgAAAQcGAwIBBwQGAwEDCQEHBggEAwEEAAUDBgkGAQcFBAQHAggCAgUHCQUECAgECQAICQgAAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAkACQUFBgUACQgJCAQBBwcDBQEAAAICBwgCAAECBgMDBwMDBAYGBgQJAQUACQUCCAIAAAEHBgMCAQcEBgMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwIIAgIFBwkFBAgIBAkACAkIAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAkACQUFBgUACQgJCAQBBwcDBQECBwgCAAECBgMDBwMDBAYGBgQJAQUACQUCCAIAAAEHBgMCAQQGAwEDCQEHBggEAwEEAAUDBgkGAQcFBAQHAggCAgUHCQUEBAkACAkIAAECAwQFBgcICQABAgMEBQYHCAkAAQIDBAUGBwgJAAkFBQYFAAkICQgEAQcHAwUBAAAHCAIAAQIGAwMHAwMEBgYGBAkBBQAJBQIIAgAAAQcGAwIBBwQGAwEDCQEHBggEAwEEAAUDBgkGAQcFBAQHAggCAgUHCQUECAgECQAICQgAAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAkACQUFBgUACQgJCAQBBwcDBQEAAAICBwgCAAECBgMDBwMDBAYGBgQJAQUACQUCCAIAAAEHBgMCAQcEBgMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwIIAgIFBwkFBAgIBAkACAkIAAECAwQFBgcICQABAgMEBQYHCAkAAQIDBAUGBwgJAAkFBQYFAAkICQgEAQcHAwUBAAACAgcIAgABAgYDAwcDAwQGBgYECQEFAAkFAggCAAABBwYDAgEHBAYDAQMJAQcGCAQDAQQABQMGCQYBBwUEBAcCCAICBQcJBQQICAQJAAgAAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAkACQUFBgUACQgJCAQBBwcDBQEAAAICBwgCAAECBgMDBwMDBAYGBgQJAQUACQUCCAIAAAEHBgMCAQcEBgMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwIIAgIFBwkFBAgIBAkACAkIAAECAwQFBgcICQABAgMEBQYJAAECAwQFBgcICQAJBQUGBQAJCAkIBAEHBwMFAQAAAgIHCAIAAQIGAwMHAwMEBgYGBAkBBQAJBQIIAAEHBgMCAQcEBgMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwICBQcJBQQECQAICQgAAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAkACQUFBgUACQgJCAQBBwcDBQEAAAICBwgCAAECBgMDBwMDBAYGBgQJAQUACQUCCAIAAAEHBgMCAQcEBgMBAwkBBwYIBAMBBAAFAwYJBgEHBQQEBwIIAgIFBwkFBAgIBAkACAkI"},"coloraxis":"coloraxis","symbol":"circle"},"mode":"markers","name":"","showlegend":false,"x":{"dtype":"f8","bdata":"pjUi7\u002fyTZEDE547z0E1HwK0Z0XEdZFjAbPO1Zu7oRUCUBUQqZ3A8QLoZZzPbRTNAqloLJOx5Q0BHBuMIvSBewOnjYX5WGkfAdcIMebMhAsABAd64wIFkQCiiFN4D\u002f0fAHL40UFq8XMDTPlP1SzMOwO1Ax43OxT1AsJE2gwYLM8BIBBtL2CJUQKQKD4f7nlfAhWsFUslPR8DKh6RT0itDQC0kyrMABmFAJvzHA1CNT8APjTQg67NZwBxDfh9\u002fVEnAsoihVJVAHkCHplNjs142QOiVAZjGcUVAHzxFVzPCW8BzDbVuo0tFwDPb86pbpkFAhXzrIj19ZUBjh3X2jL9FQAKZ2y5BDUNAlAg0L\u002f+APkAt7KJiDTJWQLzCEYrS00JA8MuYAjT0W0BRu3VfW5FHQFhqH\u002f22eE3AUPHaZp2PQkBmI+gBcehAwLZYGqH\u002f5j9A+Iy503ulSsAEfndi13tbwL4lN6kceVnAy\u002frZ3qRiNkAQPS+2KHNAQALg4yX8UEzAsqbmdA0wZEAqjYqLxyBiQP0sIfMp4ljAR0lAdqHRXMBi8VzzDQ5awIZAVpF801HAnrA3OknjXcCFiBREIxlhQIBKhG3xXkzA0bqbEt1AWcDlc88aPlFHQLPwscqZSB3AxRxT7OK1MkBTIWlcg6NawFHhEb9FB\u002f6\u002fqsJX4+e+KcC0L5x+NxBAQAViFabZc1JAmLG8Jx9KSUAXatjOfEhTQB1yhCdSQRTAAq5b9qSvUMA+TJ0YWnBMwKoe0f5bQTpAg9RIzkTgYEBtdOrkt3A5QMnwY9uN2UBANmfy6CvkXMBtPFFpzX1QwFlMazfjcl3ATmS7TzscZEBvn\u002fPTqcRhQFPtttNNxk3A01wwrSLuVcAYFUe6rQtJQAYEM6Y73znAenkUAJEzVsBMjl5ZPalGwG425uoBR13AfvwmMsZNPsCv9JnTG5hNQDG\u002fYm1ybTHAGeCm9JdISsD11vO7HSc\u002fwHFuxnuqnjBAAo5\u002f\u002fAjARMAW5ggxIExYwFupGvoPDyhAME34cL\u002fBS8BKmnjkDzwzQOhghvJ3ZjbAnsEumewfR8BtGjMgbDg3QF7JQmxRPmFAKJRxcninREBevPYaouRCwPCOr8PmJC1An1NuKcJ+QkAWw7exJUE\u002fQLxLOQAyYknA0622TcMWW8CoM\u002fmXW9Y7QPy5okUB9jLAPcTLEObyKMA+lA0dfPhUwMdNA9WqaFjA9iHnTGkBUMBbidWgT4lawGiMhufUFlbAI2i6Xr\u002fKI8CcucgIE8hcwNlCqsD8NUdAnk\u002feKVh0QEBc3hjAsdY\u002fwEYR8ZRWik3AKgiHR1LoSMCAz3t92AQ2QHeIfSiGXRZAom3hs3qiX0Debvl7AsFNwJvZvNlaJy5AUTIKrLtzScDiaOrOskxiQEBwvAwTH1DADcwjtPRwVMB3geiJK9U\u002fwMgz6CCABkTA0q0yK1XvEEBPw8Cg1nRXQCiZRq7Fc1jAZ5a2V\u002figLMDDzwW8nVtCQFpwrlWiVGJAItFPFad2RsAcOtvWY2VWwN\u002fbJnRt5SfAnmwIUbYcRsCsHDmRdscwQLmwJkjGuVhAK3DHB7b+V8AQkudU3tpJwOjaUF58zyVAfn5IhwJSYUDcIjhx\u002f2JLwFIF9139OFrAY9ld2Sl9Q8B9wpiO8olBwNA+EKet8C\u002fA\u002fmNlWwWfUEA6qjnXktRUwD\u002fg1U5PPkrAjqw3hWiHPECbnHcrgKBgQDsEF1gxD0BAIgtzlAwEMEAbKcb3TOMmwJBK3j2VmlZAbjtKjGCEJcDWM2qPeIBiQFieeK+H7URAz+RWJVQoPsDcClwna2FDQAED83AONVDAetS\u002fB7vuRsDTN0V++6tRwNy\u002f7ZPjZFvAyc6MB7DeWsA\u002f316+4wExwEbRRLIvxTZAuYDC8Ym9T8BvtI\u002f4VuhhQP+dZeLRnV5Af4fQRDNDUMD9lOvLNI5WwFmaWra9LlbAkPeBTmUjPcCe42sZ\u002fYxWwGOu\u002fteZx2BAfSUEGQ6wUcBavBJ0r2dMwCL9pyN\u002fTE1AR82TwHLKI8BYfMzjawfsP8F23GNDPE\u002fA0kFzynn1NcB83nidr3UlQLufVHz8EDTAK63HtYGKUkAapUQHib9QQHuJ3ZE121RA3n71cBx8PcA5WEYz8S0yQJF\u002fnN9S5kPAluON8mrrKkAoUzlHYTJgQPLBbQ+dKjZA+Aw+3I4YKMBWX7wBOktdwOsDgNaQtE7AzOAfzpj9VMCPZ3+4LKVgQBfmtRHEpGFAghoxZs8oTMB7aw\u002f\u002fMupWwCYcJfu8p1BA3qG55r33OMC+N4ICfOlRwE0weVe9jEfAeklpSzBFTsDsHNNtq3A5wMyMq+Gn0EnAzGPJClPLJMB5T6kGpnw3QJqAJu5JykzAE\u002ftNCSMSWsANK+9Oeb9QQJ5J81Wqe0fAc1f9mp7VR8Cz8\u002frt1IhDwIa4j\u002fhmYkjAQpglr+JjRsAyatA5OO5iQJ9CI1C1KinAozmE3sMdT8C6WWnKy5hYQFX9N1XUbDBAbvk7G5KQX0BOVg7nHeBOwJohAFc0N1jAflPG54kYLMClYMR+1iM7wMTG2DY970HAYbrtwFa5UcCNchllQIJXwPBqfhShQ0rATpKHvLPbU8CA16Nb09NMwMATUtoCfSjAdfeRF6i0FkBfAwGgVH05wJN\u002fhyAaNkXAyii8SucvQcBhb9QBd8FFwCRYf2DvoRdARBxE2tR+YEBmuITBFONKwA5QBwnblzlAgM0e0pG3UMAqNh1Xk7ViQIyYZC7D7krAaWVUprG5VsAf\u002fkkqyZtGQNfSMjDZazHAxG0xdnLuSEB2kY+JXeFdQGhE99hGwV3AEg61UBgKQcDixP55HEpJwIu1ytk7A2FAZD2bDtmISsA1qqaYoPBWwJb4lwdnTjxAlyTF41arCcC+uxHkrnAKwG60lKJBCFxAOm1v6xB9WMBuoWq82yJJwHP25GOVWE7ABoYU9PjcY0Bs3D8tsw9QwC8GOhC+h1jANPGLYlMYP0BCsyoozM4hwGJ4aI+4zkVAffDgV0NyVUD\u002ffgmlH9BewGTOS+ozIVDA\u002fgSqvPFCG0BiuBFppHxkQG7GDkeATURAKUQu1LBpSUAX+DvoirFQQMTCgZU3e1ZA+9ClqwvxTkBEFIt4UTNlQGOVM9SmXShA1LZd3xapR8AgW3VS7wtAQI5DCEOFRkjAGyOpBZUpOEBJURWGpdBBwMC8fidE\u002flfAEDOuusU8XMBTv6RvViEyQALS\u002fSEH201AMBbpqxUbTcBOlUpQFSFlQC9Tmqx4QmRA5YftNweHV8AwPxsuGS1WwHGkASEUPFvAViFjD5zRQsAbFcBiqA5VwJc6U8zSsmNAjJaQ2ut3Q8CPDhoGsYBYwIBA++1gN2BAwoFUvVpZO0Adp21OEUUFwMgaVtHfQWDAidnZL3TwMkAGngeczlwxQO1dH+DBZgTA2HeTMD5EXEC5QVMiwdtaQGpbrho+pFtAMBQZ3+ISC0AssRtMWvpLwDj8VGQWSEfAKC8txAQECMDE1EWV6zFiQM+eMLVsWU7AtkBBMq3iSkB+MBO2hlhWwBZZpzgKokHA7Ai7+0\u002fEWsBOOykYHkBkQI2Rck4ZpGJArsxsx2UOUMB8EnXn9cxZwG7ncRAMX1NAqUVQp9SMPUC\u002f+FLVzwVZwB2HqsTQP1HAg\u002fZ4i5qtWMCSrGfvotgbwK9WbkrtJF9Ac4ijdRFf\u002fD93NuuOV2NNwIM2+BYDCThAZtrzWdX0SsCSsyXiFlxHwOXrw\u002fw5iVbAYWh2CRQaWkCdmviwIbA9wDsxS6pPPTxA1nOissMGOkAcCx3mz6ZKwPgLYSaWs0HASm7uYQT\u002fYkD5B8VS5ShVQA6B4rX4jDhA5Zstmi1rWkAi+YlKJWlMwDMD2P6IOlpAtCofQzy9O8DT7Fd16ENYwE3xGnfQ3UBArEqceXRnPkD6gOITPUQmQJwTSZVl11nABOgpfGJ\u002fV8AEcY2yHzhCwIl3slCKeFvAz4mlj0ghWcAEmJDU\u002f51VQKbmRgKzOFrAU6lQ5IiSVMBXIuYYSlc1wM4KUYZrbAtAqHqZ\u002fFZiMkAaPjDinIZJwF\u002fmJXoZjDBADATNTm0sVcA6y9SjCItiQE04PeSNtETA\u002f4HAK3VHScCgvCnDhEApwHfbVKcjf2FA2bGrJdmiUsAUKPX1LAhawGHWBBdXZSZAYbLnuXjvK8BOUJ+GHYNAQCl4v7w1NFhAId6xNQAjWsCd+rFx6z9HwN87NQbhgzBAJjzq7WcUY0D7i29az9FMwPLGXiLqAWDAZMmKvvheSkDj8Q\u002feMRYrwJxVl99PiERA0CXuJElcWECkFyx2naxZwNacoGI\u002f1UXAXwt8zUNmQUCUfH6q6SJgQL1FkAlnNVHAXEUCkBoOVsA7\u002f8hNLC9TQML7GABQWDPAHUc6VCscQ0BR66LidhdZQO6bQ1qCblnAsyfnkBsmS8AmjT6K5DRAQIUXs\u002fCLnWJAqFNeSyOnO0C0MKBcw0s+QB\u002fCEU7eKD5AyFLcVdyvWECbC2XQ9CM0QPqUcb3NbmFAcsEc+oPtOkAgEbcJ\u002fvNFwPFeNLtOjUVAiqbNWYjXQMBcMX5c1yZCwLXmO4YHRlHA\u002fgGu96bjVcBgTJWHaCZfwM2n1z0VyUdApNBPsJKaRkA77mIU32ZMwKFAbdfm+WFASPWTjrtsYUAyCVvxLgdewBd2HKAn\u002flrAr3PRkcGTV8D8jAdCYCRHwPGRad0ku1zA1p3F2GmxY0AipG654ddWQLIBPfyXAGDARAbBSXB8WUBUHLWePl9IQIxzM3pwNkdA+vv0T+Z0WcALpDYKtuJMQAb1FzvYEUdAL591bSuKMsB2zIqvhxhYQC0bc7rGjVRA5RRzLHurWEAWWPEDYNgowGkSV9GKKEBAp8+VK\u002fUEUcCId5jL41hJQHUon2immWJAasAiyZBjQkADAU+AJCtCQMhY6\u002fA1IlrAwtpCJIbjRsCBqaWr3n1XwJXJF\u002fKibGRAjVLvX\u002fZHYkC061O2S7hIwGpYeZQnxlfAKwWnfB2SUkA7B\u002f2VEZxEQFvlbQKN8VHAiXn2yCSsSMA2ggVJ3VBawCoyDptpoPG\u002fL0wEoq27WkAXWrNgu\u002fdJQMNyqjUiEE\u002fAsRz1OgtYRkAZz\u002fVS931FQCue1dQJ9lDA24LSUn7HTsAfjeXiCAhaQJJhOHTBaD\u002fA3RbVaD15+796wXuL0RxIQCA5i4KOsE7Acga08wlrPsBlyj++ZpJbQH6Z4V2uxztA9aJOW60vTEDkpVjlDINXQC+o\u002fFdORjlA4GOxFfrXKMB5AfEdeDRRwPXYvM0M1FnAn+K8NElAQEBuoa77anUhwGBHmACN4Me\u002f0JY32wEbWsDtG1xVyTRWwDQ1jJjayCvAC5qqZrUIVsDOJY8L8MZawBd4zJ8QHiTAjF5OqGZNW8AttHDmFDtHQOmvrC0nsExAnvcTGXfXFsAavMCWbMU+wGqHScPJPUjAqKX3SsI7McBlzlYerLclwAA9vZP6eGJAUFIh1nMBR8Cn4u8Aq7dEQOyH\u002fnRXCkfAane9bUAOY0CONDPSv0tUQMgexP8CzlzAyHCA7SHXIMD2iqGo8RA7wNuXjgaSkFRAhF\u002fK5gtUUkCKr0zqPtVWwCnQZCjj+0\u002fAQUXwpFx+JMC8sRS8Am5kQEGiZ9S2cFVAPqaxEZGGWcBeYd6WRkdBwBCP9lTuDEnAEG\u002fV68XFUkBDJtqq\u002fG5WQHVOPp8gHVnAi9faUkfOR8AQhzkIloMzQAZF6v3zD2RANs0oSZzfU0BTuBoOZ9VXwMbiH96DikjAfBSiknhu\u002fL+aCZjfZvRLQPSYMLar3lRADvg6A1VtWsA4fYNaO2BCwAwWPZadvxVA+Ntot8+IY0AYCRqrAvZDwKHTyb19nENANJvHAdQsT0Dwid7luflIQNJK2p9\u002fK1BA1u\u002fF8ahuZUAivpTQr90AQGOuN2JPokbAfz\u002ft\u002faLDLcB38O9QCEdGwLfma+L6BPi\u002fAPhHFSZOVEBITdCO0D9YwJFAyzDdwlvAekQ515ZjOsDVx0ersk5RQLgmqTW4AlFA6Bhy+EYYY0B+QsmUSt1kQB3Yi5XQIFLA1xKFyaGvVcAWtxpvwKJXwBbQ4VvMEkfARUoEFCcVWMDSMTZMy4ZkQLQWuc6fS1RAIkmzWVEQVsCjCuYBFZpAQPHTe43U3TPABFwTZaVkKcClO04dcTdbwDpUofeVojzAoc4kwGVKP8CNW1rVC1URQLZubumKx01AxQ8Xv6U0UUCXHmtrOEVRQJSaMmomPEjA2z4GLxz8+j\u002fSYqLAs6hSQHrHLnXVOk5AwieOa+EsY0AkJRMVT4w5QKtEVbu6yFNABLZvZtR0XMCdaBxb\u002fPNJwJI4cDrEKFfAskHlRC7TZEDyURg\u002f\u002fiNkQE527f4vglJA1QcGK5fYVsBKfWh+gBlHQKm5XBy4GEDAlcjdgk3rWcAQpbLln6pSQC7rAt6IeljA3MKuY7t8PsDzyYsGJ6gzQONnuci9zkPAoMxqaoIAU0DxNpmvvWdFwHexQcSt6vk\u002fPfL1MwkHU0DPSUSvEzZYwFThAaR1ulJApmlQU9AJSMAlNQn8\u002fGgvwDePs2ztMULAZiW57b8bSsCcMK0WLUI0wIiiMK5A3GVATmPywNu3UEAGln9w32BCwNG2li7ZMlJAbJOlDqJzLcBuRrPTkRhIQMdDVIkFI1VAE1E\u002fC15nWcBQO\u002fgZQHRQQKfv7t2t7CvARmoXoL3NAEDngK\u002f6nh5UwDtInqN5E1bAmN0U\u002fP8yRsDYg2PF3UBXwGXZEyE4+FXAfTk2RPZZVkDPWmN3CaBbwN5wEtoj6EFA8OCnv4++U0D\u002fGpgY6Zg+wAc7YmpyGU3Ae+7tBao+ScAwi3gcQlZCwOCI5\u002f0YIiNA1LykAaaRY0BNZlYa2YxHwIqScMjIz0NAqBOY43rWSsBcNLg\u002fwBdhQCrAkxMKS03ATeKb5QUVV8C9iFUZNCIwQJ5Lyjj\u002fkUfAi0XT6GPiUUDYaBxkUvRYQHFWRkzL51nAuihvhPQWN8BI4\u002fgEqt9UwPUmZlJ0wmdAHf\u002fs8Q8vPsDWT9MHdLtSwO0WbrkzDhdARX0JFEelO8AwXdTHmM0qQIJDk3rG0lpAYrpF1Gz6WcDfGqeVDtxAwAoh42PrtVbAXpr9uXjCYEAyU6+O\u002fzEwwA+XgPxDNlzAcTW13yIMMUBVKmh0mW82wK70qXbjCBRAgs1Xrq+KV0AybbfXCVRgwKR761xx3jnAN\u002fj7+DR7VMARXnYlmoNiQHCygk02C1fAuuoDEg7nT0DkLkGUXqoywKrg\u002feId9ldAExMzt0HiBkAmIZ52xqlhQNRHd60CllPAJtMffe92RsCSTNIOz9pUwJRr17MjqUHABK61LiVsSMCs9xaj3jVLwOS7iAGWBmDAMsF4PNOAYMC\u002fE1asMFA\u002fwNRGuy4Sgv+\u002ffzJevF1XS8Au79DkrcleQCh7MPgV1GJABnZO\u002fbpjW8ADVhlV\u002fW9VwPbaG57qNljAFj12EzC3RMCoQJjSNXRVwPT1ydl18V1ANHCcZup8TsC8D2YiG7FawK+LVrSaiVVAAJ9Qzvj347\u002f2\u002f50XHTonQEJ8M4Z\u002fLVvABo\u002fxAY9\u002fGEBtHGCvWG4nQCUIVck\u002fH0bAiAp2q8meXUBh5WL+ln1bQFYxpuPtPFpAO3nKq0b9OMAyVt+WZQ9VwMnGxkV3dkTAVYnZZPr5S0DDZrvPp+VdQJ5fjai5A1XAHgBakxFqUECy7ZPNudFZwHJK6dIxQEHA5JaACJpJUMBe4BXnOc5gQO\u002fUojEe7GBABJ\u002fndCY4T8AeP4hhXe1awCHve1v0kltAs\u002fsGKiD7D8C4CZdy+51bwNj1\u002fiRpkETAInZgyk1gXsDVODG38JdCwH6uUvXVuE1AMP2AlkT4FEDynvb\u002fzeNFwDLXjZpw1UJA0+f6kYw0UcBzJDBGPr9JwMYFJLLjvFjAFMqWja7DW0CZVzIn43FPwC6LB3FodzvAlPfdeX6AREC3F75ubfBIwNzy2sf5PU7AWA1GlUPHYEDwsNki83FPQNUpMQtLDw1APpc21xHEUEAcN5RkUGZXwGKlkhd\u002f7U5ACq64vRewS8BSJWEhKqRawHfqlHoiVCPA5yarYQ3uJsBHACyr+G9OwKjF6mNnDFzAuOEUaSJiWsDjmPS8x6xBwLDLwpOTjFnA10tSjmvZV8AM2c0vHYA2wN16MgqislnA\u002fl7Zal9IVsCnHyCr86E5wJJx53vbmStA7Np+7mQmRcBZ92nwSD9OwDTcjYLv40vAsz1NNckuVMBOrIhkgO9gQNWv7U6\u002f\u002fD3AlQ0n3r23VMAyQUMPxKVGwNhGA0Zn12VAMbpvHThQSMCaWZ70U0FXwBAP6JxywEBAokgDAy\u002fDPkCkp3VtAHsQwKlILHdwHV9AMDEp5LXiWcDM7jw2fVJBwKqi+GGgAD9AiJmR\u002fpX7ZECa1L59gw5OwDlKC6DYVFnArd4GIVYoOEATZkC50HZFQHtJFocT7jLAinqCimQWYEA7md0kYidYwHS5FG62mU7Ams\u002fOPbOKP0Dz1QI5iMJlQFXDmSDL3EvASYRCvSqEWcAgo4SXssk2QJFHMxqbVjFADl\u002fV0xVDOsAYazI2WltWQIFW03I2Y1XAJ5ujS9eMSMDUBrNUG2lFQIoul8o2CGRAE4xyYia6MUDsBrxRp4YeQCQu5CL1bzfAEWWR+4aQYEAxXHF+B5cqwEhdddYS0WJAOAZOJ9vTBMCs86LWF+VEwKadzkLAxRfAmIAKPkYnTcCJRPzDcpA5QMfS7PNaE0bA7WInJXnXUsCgCle8GwZYwMkc2SnehSJAqpwWyz0SJMDwnFdAtKBKwPO1ZQCI0mNANRvY5ByfZECJKOnj4RBWwNxadY9sQ1bA3kimxV1dSMAvwqLFEJNRwG8wf3bFYlnAkQlFsfmzYkDuC8jjsDdXQApXZUHzlVDAWRuM3CoaVEApHKSLX24VQIJ8Hs+NyPG\u002fko5jkh3wVsCNSeekI7YQwNtQb1KQEh7AOR1TMgRBPEDgw9ck6JVVQLBQCnLACF9AAMkKe0EvXkD\u002f47U\u002fqTE9QN\u002f3IM3SikNAHHyYWoKrUcC4\u002fy2KIMEiwOtgz4ZSz2BA43l4bzv8M0CtAKjhn8MQwF+ckVj58FvA3i2OaLU8TMDjYY7PXh9ZwNBfg5D0IlxAYUOmBB+AZEDpsvC2ueU8wHz1aTk6bVfAQ7LNWeKWWkCOiRdlJufQPzgGbmvIPVjAnxXMhVYbSsDI1vg3qp5dwN+WKw6ZJT1A7EqQfxDbWkAbMn1ZwAVCQLDlp42luEfAEtGeoSZOOkA6TmIWXQs1QLbG7Glnf0bAzx4DcC63UMC4Ld9WI6RaQKu8KRTNnkrAtgYZ5RR8HUDGz2BS0Ns6QMhy\u002fUKywEvA0\u002f5DnjErQUB9ZPq1jb1jQOLKN5mhlTJAjdjUUQUiIcBPh+XYNMBVQGjRbcEjEERAeL+8FeSmWEA1IaPHa0RRwND\u002f2LDOjVjAo7Pqwf8QJcDZudK98yAwQJHsAaW970VA2q8mb+PzVcC0QGpqV+9awFt9UCuyDlLA5zPd4FyRVMAdu44hFmZawEUtkERJQjdAHWGEf1gjVsDQF6b8960gwGpkyTJFOjjA\u002fZc+7DC5PUDNqyiZ1vBRwMT2YXjtdUpA1EI4bnmRPUDHggKyo6kwwK2gKvEQ7mFAipttpl5rUsDZlcWYxnwhQHOx6XY9l0bAzO1i4jITVkCjvDo8FlhawD7aA\u002fN3JEZA1fW6wWvFQUBfF5jLw8hNQFk1NgCWKFtAaG4ha03mYMDUlWCKpps4wG+iHKWiND9AEcnDYZ+5ZUAfLLvOgRBXQLvz6KAqzFXAN4WXl1rlREC5NwRnpMs+QB7cHioD3FRA+oIUsTohW0DQpEPR50xawOb6AmRauS3Aw4GGtnxDPUCM3zMW1NlkQLjHuHB+ZlZAC07by3cGWsCW36denydIQAv7RVPtxSFAsMMCVqAFUEDg8AsuznlfQO+UKQQQAWHAGvVo20BdOsBvbTPBOAJCQPfcv\u002fXNDmJArBCrMTNmJkBOdL4zwQ9PQJYiGjZkNUxAJ2QrPx+lV0Dr\u002f9S31lpTQO0sCzQ6Q2ZAnxDRw\u002fe1N0CBzrL+LMo3wH1HjAWOLDZA0U80Nau0PsBVp5Jqrh8dwL+FL1kWT1ZAqz9ycuE8XcARtwZsXNpdwPu5GONeIUZAFCBnbvzoUUBADqO6ChNWQOo3cl\u002fo\u002fFrAoqbc68agXMBiKxdlbbggwEsqE5l25V\u002fASgFoE89\u002fZEC\u002fiC49mdtWQIG7k3VmJlzAOewxL55NW0Aav\u002fy\u002f\u002fwhDQLTm+rOk1z9A628XGMcJYMDVTKH7JYpLQASvcDQpn0xA+qjVveiHFsDGm6S5NJ9ZQM1Gilk9PltALxiN0iO4XEDuzFpYVtMYQEGYOO6FUkJAfKlCnKC4VUB8QPpqp65OQBRZNU7sXmVAGj9DX9zlPkBCWbu9LiFOQIFu5BeDslzAEVKDDlipQ8BEHfPCta5cwG\u002f9tzWb1GVAiJZt+y9NZUDgUn8IgH5WQN\u002fUxHbMVFnA0MFazOQfW0C+yIPLVaJPQKq8UIZMJVbABRwStGDPVUAJ6bLNlRY9QOIndAw7hVVAQom3CuXnQkBor667MpdVQJ7a5HsDelBAkMCqTPqgN0CJxn2Oms9UQFWvug3HZ1\u002fA4S9wrLCuWkDdIpqhzFBFwKlQjd\u002f5NxbAf7bUngJ7OEA7Re0PB+RVQNlu5bhIByZAuApSD\u002fnyZEDJDozHg7VCQMWAe8kO9kpAA0Ps0ksVXEDEMN9Tii1CQPe\u002f3hN8H11A4FaRYLQJVkDTHqTCdBhhwJEMQx9Ypk1AnHgpb5WGOkAhuH8GNPArwD90KqMoslzAtuZFr0yHWsAwOpQg69ciwD48uoTOvF7AEq8MESD+WMBC1yhYui9SQLUf3jRbTl7AaCCR8nO4O0ADR+rGxRFPQKTQ6qMq7zzAt4qCAOabNsCkPAlzqkYmQC6Eeag3NmdA8ztqWjBHOsDYVTHT7rQ8QDVJLYZxBjzAtbohhUd5ZUAuN2NWG1hNwLaMKqSjHVfAlLE80JjrOUDw6qk9xGw5wJJFHIx4MAnAWSQbRP8hW0DPcozaBFdawNC+E170JlLAeGXSiWqeOUBGyosortlhQM27nEg+qEjAjeVpEsVSV8Atz191Kyw8QEFB7vUPuDvARZ9pb2+uNEACWdbymEJfQJ6ejdSTWFzAI06nSQsHS8AKHTZOu8wzQMs3zvsegmNAtydqvtjhR8AWYvdwQJVdwGfavTe16StAcIzgJBqBIMBnWS1uk+VRQDwudo7MPVhA7r2fIXeOW8CFMsedu7o5wId\u002fIPt4UTdAeBsi9RqpY0CRnah\u002fksdAQL0xpeduHjdA3GccEg50JsDX7mu3nIdUQMrf05xKIh5AV7Oxub4IYkCfn1hRFso+QAvvr1wXOkTA9\u002f6Fr\u002fwVMEBw3iw0WedHwHW1ImyRoi\u002fArRptJkbDTcAhzpV1EZ5fwA6S0pdwHFvAOABOY5zMIMDUmt9VLE84QL2owJ0QQUXA3x8w0FwbYkD0ViL7LvtjQOvnG9qfKVzAs1nEZXU7TMB1WtKOim5fwLvuri9Ir2NAI5moRU2PO8AQbF1dLjxawEWnOcEAXlFA26KcODL0PUCAJCE6waAXwMZPkby85F\u002fAMpmrM8y2QEBkp\u002f70MVsnQKzyjD2GTkDAufkYCSY7VEAUMk0ljQNaQC7LA\u002f+WFVZAp8Ax58ttRcA+CFGj5mEiQIJnvJjHzUXAoB5XBlfRQkBXZ7YMwwBjQO9U7TpyWUbAwKiMkGrAM8CHFXzGGMJgwAHHYV\u002f+UEbA37qXC8xIYMDy8Q6a5cFjQDwDVi7YCWVA5vhDZrUjQcAzZRfPOe5ZwK91ZQPWP01AafRAkdS3PkDsmDUF2F1cwP\u002fPvfEWIEjABCL\u002fOMCBYMAyxrJb4js4wGtCmHYLk1dASIYiRfP7PUB6iiQzGRJRwPp3JQuWnVTARUDK5c\u002fvNkBZzhfXPFRKwKBABQuvbVvA6gTacaWvXUBP6Xq8xH1GwDWWYKjmZUTAHDGq8WQDOECC65ySFRtGwGuTctIBMda\u002f\u002fHO0UDbGY0BcfUoNx7hCQBPWUXuVdTBAb4\u002f1a6pRQEC+39FYclkZQDBvOijYX15AjkRvo4+IRMDQUVuErbZdwMR4s\u002f\u002fgfE1AbKI3W5G9JkBMBwf0f0A1wFqap\u002f+hkljAcXGBWGdsWcDHmQ32ySBRwBLiv+n\u002fvVnAjJbW56YrYMAYRARDWgAhwDC\u002fGipcuF3AUmIILwQeGkCqCUu02rtDQFb9B9iE4xRAMb8cAtRENsCR85W0lTRIwBXzFbzW6EbAWX+8Cb8dMUB82ZaZXaxjQJBEeu4x4EvAkzqvbxIOJMAury8xauBFwGJzkF5hBGNA6HJJtGC3RsBgMnSAtClXwIRtE4R840ZAGOmnq6WuNUAHQkde8ddPQCZODPVDZmBAAQ38qJanWcChdYWIcKY1wH8iQoxizy5AwXn+p9IyZEASv6BzYzZKwExqiOcKH1nAsAWdmy1iKsCyxiv7SBI7QKAM\u002fPtwqVNAjsW+cqCFT0B41LwB+uxcwJqHnblImlDA5xB960YpQ0B\u002fP4T1J1lkQEg9f8Sjvj7ACmHUD2eIXsB4j7ZwVDIWQPeI\u002fUinuCTAwRXvswf4L8BjlLARyPlVQPuIp6DrZlfAXissMVCHTcChip9iZEzqv81hjbFKTGdA2p8Fk47EOkA61vrkkZtBQFr0bYRRvENAeOuARTS3WkBAbrmE0OAswHGbwI\u002faH2NAVjg+092zNEDmOhu4o1pNwPKhW2947DJAAnoHU8OWS8C03G4eJ6tAQF+7kafQTk3AvxpuicYBWsAVWYg\u002fQwFZwCffC5xb60jAvWoj3G4TUEBF8\u002fGqVsJDwMAl5jSBZ2VAjFICz761ZEApOFSZamZcwAfGO3bitVjAkIKTSDwsVsBqzmZmeXFOwK4fgZ8ug1rAFqxsMQIzZkDtCtNVY9tFwO1E7VRrKVjA2zBbc7ehV0CcQdUO5TwJQE7iPdy65DLABUGNdDrtWcDlR3cmZQZBwDp2C3UTtQjAmOjAxnxkPUD43rXMqnRbQFdMi\u002fFgvlVAAxCXyAu4U0CLI73eDrk1QD0kVtBMNzpAIqAAPnw9QsBynmLvExslwLE7tcqkAWdARIfNg3+HIUBI8P+MxIVLQC2jyuSIilnANeWAIK8RTcALmxiLuFtbwAeR3P7uZ2dAMoKZQm\u002fZZUCITqzG6jZIwCiXMA5AB1rAwNkpTasCXEB+k9XS33NCwHy+ryAVcVzAH8dx5UDxQMDEKH6E4dFVwOyJLthwijxA+hDHdfKPXEBUhByCo4U1wBAdHEZ6ZkXAcAIleolQPkBh+orQZZkwQOIcw3bnOkXAkjVSn6ixWMBjm2sCPCJaQOkaIlwowUfAaktSC41BPEDlVAqhcpAtQPKlt3bEvkPA+i5a8Kc9OEDOhIy2VBRjQINgzX1uWjHAMhEHRU48QcB19bSuothVQKd1aTwlbTNAEaalOiBSW0CgjAvcT0hBwCSR6xtz71jAZJiMbH17JcDLcpm79T06QBd7lAO30yJABIvT1dKgV8DoJpA7ziFawKZpUS2V5VDAfMD\u002f3WFzXcAr7eHrk7hcwIfx995n2zTA2QUWxjSSXMBvwc6P8PkzQO0LXRKAOS9A1w8E3u5EPkCqNRPdAc9KwK+KHA5iHUXAesqD3iw8OcAFhDEix70tQKn\u002fptrlUmhABh09GvE3SMA8cXk1GqAxQGujObBZYkXAnCySIW7eY0AL7EMRzs1TwDbqfx0kYWDAPr9sC3l\u002fJUAi250HMZc8QJDo3ifbXlJA5KRyQrMOW0CU5YhRDiNZwBxL6Jb6FU\u002fAomENnuXxQUA7fibFS8BiQFoEQKpOPkDALM7xSMkNYcCIUCB\u002fCmbNP84jKhnVxTtA7Iz8U+gFTEC0HZH2VQZZQJnEow6QKlrAlXPCZV2wUMDk6KhbAXE+QHZfZI0ZpWFANCxe1i95TMAdlyPbgzVfwLfv152xqUNAwJOiHoVGPEBGwTE\u002fGy5HQHi4\u002f1h+el1AtmA2EteYWsAcw0N5ZJlGwNuXK\u002fNq1DpALm5wO6S9Y0AuLsAazkU0QITfhSq\u002fBkRAWuvDK\u002fUKQkAy8kqkELtcQHNmk2DWkEVAfZpF8MIZV0AwuFmfTQ01QHpcEDAaakfARYZeLDoRB0BgkVOoIz1NwPKNSxgpqzxAwHyWdUeRR8DVfyyAEadawMNMohALS1vAwXGm8fAoNEDu3XvQ7rBEQBjo\u002fgJ+2UfA3oXdfGB9YED5+ceGeudeQKDuXWx4rWDArteB8\u002fVJYsDAeKQG7aZawLkyNbKLLU3AG875SIChY8AUa6ouKDJkQJaU46X4K07Aim3vx294YMDry2i15sVWQJ5y84ATaBbANNiU\u002fahgAsDL07PHmnNYwJieRIiUDjJAlJkIinYDNUDaQehvTIQ9QNfu2eaciFVADboNaQ0eWEAcPzH0xXFWQMwONb521jxALe63wLXaQkCfVe8cspNKwAXnd8hS4UpAxp+R004RZECDvbQkPJ08QEAJ0U5IIFFAKCq7MKIZYMB65v7pQsNPwBbFCPonI2TAVv6evluPZEAvGKdHZt1hQGo5lHbOvEfAK45Xrn6IWcCwQYX\u002f+Y1cQDHhnG+1AC5As5VOEVt\u002fWsANcau\u002fFD9LwHngFND51FDAbrqbipnNPkCgabQOxI5dQOl7ia0jGDrA\u002fAZQkQGkSMB3oFpXOy47QLCEVDthJkJAOmHs1aqAR8D4GJj8wNlWwD+tdwxDt1xAFoCosQupS8DafP8U1IE6QB95mOZnUzJAc0D7oXYRRsAWI2KeH+o+QOqo8gmh8GBAGl7RO5gXSEBgMjMGLzg9QO6U41fsXF9AJEWx3WeMJkAjjqshyblaQOj\u002fAOjtk0bAoQYXAdQOV8B2RsCiDkBHQGo1B8koEENAWQVP9GqHQkA7jMCMx49WwEb4\u002fp8yvWHA1vcay5emRcD5\u002fC2X3qZdwFAFN5c3tV7AzH57isvBUEBtPWGeGOBZwGy+akQT7TdAChLrzOV2REBIvQbpQ5VCQCr1ZIq05k\u002fABdewWiMZTMDrSX8BKdg9QNqff5tkJ\u002fU\u002fxC0WI+g1XEBeK8URo3FJwI116EZoK2VA9prfKresUMDfuKHGkBZSwKwVrB3MkkhAEja9KAdhN8Bx8fkQPIFRQBtWAoq77FxAa1d7H1EEXcBgJLLGke06wCDS4mT8whRAm+EpnXk4YkDSAKQWZytTwKeabVlId1PA\u002f\u002fAOIakJTEAeZQVzmOUZQHIEFla5E09Aerr74mslX0A2gcUZ8l9fwBAyBaquYkLAFgcQqo2kEEA6IgsluwxlQKLpPP2qH1HAVqywUFwHVMDir5ONEDJEQLL8OvpsVCvAio5vi79iSECu\u002f4DlVX5gQMHUhcxhn13AQpRIbDyROMDnTAoGuqwzQF+a\u002foiPDmJAzPlQwkMtPEAwnwoxk8lOQB5fTHmAwlBABF0wWVfOV0DHJ6t5hINOQPC3hKG+3mFArKD3qJ\u002f74T\u002faSdn0SYhDwPi\u002fwGlr7DZAwrcdrL4rRMBlftRLlvY4QCAc528tZVPArsaWq\u002fqgWsD6zbqYSVlawEDFCoFQkyZAa\u002f+1k1JPT0CV+7eTtHhTwPi33l\u002fq+mJAO931VCxAY0DYWlavcDZdwCrHy2oMKVTAK5w8qZgSYMC4M7rylL5SwHiIq96jLFfAF8lK3JlvY0AJXQnY4F5VwDqoAGKfLVPAhgsKDE+cYECzpyj4XRlFQJkImnh3xEVApk0gQN2JWsBG9weJCORFQOWZ8cJuWTpAP7Ws0lM9EsA05E3\u002fwgxdQDZuw1lrVV1AGKLKn\u002fD+WEBZH3ptqtAjQBJZgps1rTVAMEk91ti2VMA4PxX70kVPQBviGRsxfGNALZJ3YjhJPUDVhKbxmeZLQIKS52sihVbAELfdACNYS8CZky0JJVJXwK2hT37ScmNAfKkYCDFmZEDExR3TEZ1WwHhL43SJDFjAtNrTWKg5YEA8IkjaKcpBQHvB6WHA9VXA8GwJR2jNUsD\u002fz+Ga8MpWwNGdXK2ejyhAHXxWrjLEXEDBlKNX1IcxQGHqIqFXk1HA6OpMw9x4MkBhOHnBAGABwKy51sAZiFTArTDxJ52mWcAASAa2GRlbQLgqTBHbDU7Ahpq+9xa5H8CGCIrekQhAQLbsyM4XFFXAIq49KzYlKsAqgZrpGW9jQDJWPakosU9Ap6miOFw2P0A+bBcrP1ZbQGTM9H+eJTZAAUga6aqYV0CaE2QA0FFUwA\u002fF0QRzdF3A+d4XdLB0UUCxxrm0OQQZQMjQdAfVtkPA6KgEevYXXcAovkUU0r9YwHqDJjCrBlHAJceLcZ8dXsDzJVPoiytTwI2PbgNQuElALKPOku4zX8Atn4PAwLs8QHDdFo4wBUdA+iLxMMc45L9vL\u002fcNLRVRwCDK+S5nNE7A+RVlRDLCPkDv1xapB7APwCEpR5kWImNAkgdum4uPUcDMtxsEH0ERwBxN0hdsPE3Alency6CmXkAF7XkX0JFCwL6cl6YuV1nAI\u002f20wOr0FcCJifAH0TcrwOlyavCzeULAKJGA+1jcXECilvsHqGNVwMb6hd\u002fQ2UHAOxNaQFwmTcCyheLk+lNfQI1WvZwnIEDAGyT\u002fMy3kYcB96jkHQko\u002fwGzqjEuRcjDABTQzfC11Q8BPc85fZElaQKwr9\u002friQjbAnFYhYZrjYEDB+oWwiaVCwNZkB1ooPGHAozQhMeCJJsBLKF8RJloxwA4FF2QIviHAAFFIHBm0TEDIlMx2Vy5VwKUCaHLJl1DAG9ucZrfGScCQrrAjN\u002fNQQLbG58h1Mk7AomleRWq5QMCEYLmHktg2wC1WfKOPOVdADI6yTljJQ8BDB+wz1HdiQJBwIEBV8U7A2DStl1kIS8BqmJVJe1xFwLeipZY7KE7ADsVx65jdJEC7NIsOoaNJwKnbQRwj\u002f1rAV13GMRnOV8DpGf+jmhJGwMLTkRWJ1SvACltA1FhMRsAH3bn1idRXQI3GJo8OUGRA21Je77aXZMAqQcPLmOdZwBtUaHnbxlTAMSkw\u002fxTcRcDpNoG73upjwPa1dzthSl9ARiduGItkQsDg85Mm4\u002ftWwM6IMP4JwVtAD7YtcmRqQ8DjBdU9rGFHwDX+04uh5lPADf+WCXEDUcC7kDehZUJDwAzC7NLSBkDA4ogS6OtxUUCgeXmb2fFQQGJD\u002fcPVpldA5cwmXuljUcAYULim9mdOwHiAzIGFnEfAQEILCsIyPcCiVGgJ0YpZQPbYRd+oE0VAgRpnOCpOS0BQ2opHa\u002fViwFIeOcBnjk3AMquAkHP3Y0BVFXhJZkVEwCuXfAjRJlfAbSdROLL4WUBIPisHi+oswBv1YAwz\u002fVfA9e+4bgeXRsBZ3PsJtepQwLqNc36iaU\u002fAYcnnT+zDVkCWDXKzusAfwPzvQHp8n0fACMtzLW\u002fKLEApCC7hLTBKwFWF69qxb0XA7no684qFV8DQLd7ZDYJaQLmzPRwI3UTAUdPk2DECJUBBKEcVqSwFQGhZhayLyUnAH2NMztUbI8AM+RqjDJdZQFd67QCTzzfA11I1kFtOCMBWXVcv78tTQPrd2ky9CDVA0shrVbRcTkANGfTqseRJwK1WySQHfljAqLIBsKSz8b+Y53A7yrsjwIO0n3XmzEHAS9jo3rdLWMAGWKRoQbtQwBz4aCI79FzA8iSineeoQ8BOu2h8K+pZwBtgF2CxNzpASIhGcu1XNMCQWPeeZPxRwKR2m\u002fDtNQ9AwLWB13XkRcDvh9K3TqtjQNsiubfN1U\u002fAjJlUnLBcTcCJm9VqwstTwGvArbG5s2FAAS64XgEFPMDksZLJ\u002fJVZwGl6N1WsI0FA2rgHb2a2FMBFwOzMxW5VQAGyqmFCXkhAzLR73j1\u002fV8DhBMHtUr0rwBps9DlZ60NABOE0jdA1YECo5IIJL4NGwBhnh124SFnAdqMtj2lyNMAzsWEZKjAzQKTwOlLVWlJAHn4oefKYXECWxXegIPJZwD03GLJm00bA+jqcUHDFMkDwtfHZcdBeQBGsqYHmOUDAIy4BGS5nXcAHqwvqBNkrQHShozeqsDZAln+XRNlQVEB1k34RlIhSQIAwDj+i0lbAkDlu\u002ffwm+T9HpGr3dL5DQH5IKfCcrGNALu1\u002fYVTtNUAcBADGlx1KQHFi6qZXw0dA+r+QRVtCU0Cpi6Tv2RBJQEZEwuZfDF5AsFw0L2mDKEBICbPi+gw6wH3EYP18qCpAfeYVCut4S8CG35JL+xolQCTPVg7oyUXAl8Ut\u002fxCkXsDGYgxFJFJZwJ9USXJfVkXADoak7YQkVUDQNq\u002fzzXlLwPrg37fpuGFAK3nemcTGZEBNvk6fu91YwGx2CH0bnVPAuPVjEA\u002faWMCYCCQ4\u002fvVPwJQWlzWCcVnAo9eq2Eu6YEByO2p+VVdIwLBg7S2wz1PAdgrOvPK1WED870Ewctg0wEa66JxpgUfAz4CyYJeNWsAkOa1KVHpAQH6DqaRNyj\u002fAqiYh\u002fm1WMEBd2XEuHFRAQAciROHV9lRAUq6vq08MVEAoOFK8mf4rQBdotyyWVEJAYdPDP4lQTsBBN22XXglVQH02nqY4GmFA1Hpod1oOPkCWqkXL9p5UQH2Ibgdj8lnAM4BWimlEIMCkDkoKnyVdwBsJcy\u002fXXGNADYqFYTsQX0Bl0rlqGzZLwPaMomacMlXAZsykhDXzQEDeMZolDRszwEhWoodzH17ArNAWXy5RUMAToWffOEBXwEYmdRPnoDJAuslQ5uu5SkAszf2vsDQtwGRL6CfpkFDARp6IkhOgNkBjLS8KF18+QBkDSl8830HAEPUf8+0EWcBYINFldgBOQIWHaD+nzE\u002fAWzFhA3Y6N0Dow943NiY1QC5s7oUxlkvAiSz2qk9kNUD5RcLpM6xhQLBcSlvPgVdATqhmGXn3LEAWPuBSb5hKQH8n5DV6YjlASuhFeHJlWUDH89O2+whMwDT9+L2HVVbAzH37dclEVUDotpuAGbAkQKnlvND51D1AmtJ58A\u002fMW8CkYC\u002f\u002fWGBZwB02MyHlOTVAaPyGexYgV8AEYZjINHFUwOdF0YFoeFRALLA8cLD9WcA\u002f4fonQdIoQH1KQB0R61pAQLvQebBRPUA+lExIIt5HwNb7eAvL8VDAAZ9Ks6LOPkBdbgX2evwAQCF6qjw4sWBAzjzn2Q8IScDcPZJspf\u002f5vzaFAkaw8CPA"},"xaxis":"x","y":{"dtype":"f8","bdata":"URipUa\u002fvPECz+qYuQUZIQKPIkOvuyDVAi3TxaH9cUMCDOVk0FutjQKLxoiWX6FfAMMwtrfV93D\u002feES6G7nI6QF0iTdJtdD7AV58zJaqxWMB2VAgmyB5MQAL1NuXdqlFAu1MQ7ekNOMALdx88HFVSwH257S7UB2JAotjfl8xYBcD6\u002fOikPKMmwIgJHKMocEVA6bEeEFvjO8DwDXign7ZdwAZlOvejSD5A7RP7CA2pR0DP3qQVJ9wTQE2WRj4v207AAVZD9AI0ZECgVlw5nuoywCq5esoLtPC\u002f1chnGoOmI0DPz9nci9I\u002fwEe5bbGuCV3AfnR0MTBDRkDGNJXXgeRdwD4CJcYu9DXAo25FurnVOMBGh977jM8owCcXhEf0AD\u002fArWO5kgTmVEAok5R4piJawA+lpefuKj\u002fA0kLjLyLXWcCyBPlNuD9BwDYgGKKqH2BA3NDRF5m2VUBq6PUZV7IqQHz58ci5TkdAFA\u002fRKwbjV8AlYrsjxSZFwCERKyEUXlRAKlbCsHCEQkD16P+lpPcpQLj7FSLoHSDArA7JBZfP+j+Gado3\u002fp45QMZkEf8Q7DvAevFuc11QFkDzREeHpSBFQA2umLhG31FAjb3DPwImO0A4eN5DHk0fwC6g2FWBilXAYdBkUVFrV8DyrNQouSY9QKcDob\u002f1YVjAJLKiryQJVcDm7ccZFeBhQFH1mzYT6SzA0GSsYbScGsB3rkG7yREOQAK66C+6mmBAAgqoVIUXIUBaN\u002f3BFAtPQLuCFiEK7i\u002fAoJGUN6WuQECH2HNxvRdawPBeW35NbDrApKuPptWwMkCJhDKlOKNAwOfm4W177jFAPhUkqxsyK0CccuGWGz8qQCoYAbdc\u002fk5AZLq+6+UIS0DAybgwEZ0ZwEn5VmUnaFbAq0ykkYdjKkCGjfgzwfpVQBhLzdhkEipAUNyCnG2dXEDxyyxUvMAqwGJC9n\u002f36VfA8Ab3QEXyVkBpSRsTe6dTwDdaAcxiI1fAxDKuss+pT0CQTs7rDl9EQD4n6AvXEjFAzaD2+3aNOcACWQcfp\u002fhiQAdn3G7jtlbAiebCT\u002fc4O0BYB81RqhRjQJptZzWPLjpA5CnXbgHXJMAhlSAijV9QwGruL1oLtBZAeZb0Gh66WcCh7BhtRTogQBRk3BizkVRAp+fD4fBTPkDEYHyW1skewPMCqqyNFWFAVkFvEhUEYUBzo5v89UdKQEiYVFBt6DFA8qv\u002fhACsOcAk5WcHU4wmwHgLK8t0DjTA5lmSWzRYIMAhGaeat6U0QMR1y+97P1nAbM\u002fnDW9cR8DMojNGg6pdQKYdFR2nTjHAOnL8K9xiEMDrZ5S8QzRgQEYX3j+ki1PAIFQxFT3mRkAUhV6v6nomwGnEmhQg0VjAzeq3NhNjIEB\u002fqu7mSntBQHB0Matf8UtAGKIkldeOQEBNPsuvTbZWwGDRAPI5fl9AoledFxSFIcCRksn1iUIVwN7OYOmzSxJAUsc1GG3LOcAwVbeuZz5ZwIfdy\u002f02pUNAqfaHe7tfUkDk73TveZQ\u002fQLhHgVIXmFjA\u002foUAr0MqYkB\u002fXC5sDvA7wNh+dJ0MsELA70yfcZirO0C9+BMg3B1FwBd6dcLc\u002fFfAVxqOMDqlOkAoqsQsEUdRQDj+zsan0vk\u002f504bHnL2UsD4Ic7t\u002fZ9hQFZiDlukhy3Ace2rWOyrMsBA+2v5BYsrQGi5p5yt2STAOtD9P54wWsAcgJhDvrpMQAlecrE4uFzADvczPumeKsAzxMxFgtcowJ+S0uIx+RpAz\u002f00rzBrKMAf6uBg9gVJQPSeYSl1plvAlDfEtMSdOsCBcRMPuE9awKL5cnmFQe+\u002fIxlE36PyY0A+1N2lOfpGQGQ7f9yzoew\u002fPC3Ljn\u002fkOEB7\u002fuhi0itTwNKuCUa9dBvAoQC82KvTTEDrrI\u002fpRAQtQNruzvI\u002fukpAP5Mp6VktO0CyfDnydW45QA\u002fIS0\u002fiRiJAPDuzq+K1OMDaiofBxWE7QAwvGCoYlz5AUVE9q5UYQkAuQY31iL4jQNCMNQn2Q+e\u002f9wJhaX6iV8BxN0QwTTdZwPzN9Z+UPibA4JFLXgxPU8BS5g9gz\u002fhWwGwXAXdR7GNA0Hh4UZH1J8Cg2\u002fu7+M8VQAqtgVCfSh9AQUyoPUD4YkCM9O94g1lYwEt06gB07FRApK29id94IsAdJ8+xpFIrQD7P9sT1x1jA3f9hy6cWL8CccSrsXmMmwHY\u002fvCGALTLAOg7VtvNfOUC4eUKmXjZHQFVxzIJOIEFA2FCPvp3bSEBQr+CBIzkaQKyUbpGM1wZAqOEPKUBbVsDYiEUgc61CQMSqGwzlDVVAddFBg4wRKMCTFFkdObFWwDCFghVXt1BAJwFwxymAVcD0r5+1Yx9VwAB+71XLVkdAJLXYv3lqHkAFKqpeHXsmwLVBP1R3dznAoGgcp\u002fXIYkBIUY6zDF1SwH4rzZ\u002fIiVNA6RywsmJ1YkDbmkkkgFIxQM\u002f7ZqtkzDfAejqlbDz7S8BT+5T8YmU6wJjK+CNoaVrABXRh2zf0GkCXoW0ShqpGQAaSTRwY9D5AHP9ZcdU7NsCV9B7Gn\u002fhiQFV2nR+BqWBA7VMpWvqCBMC\u002fCj8RTCUxQE5Tq0cC2BjAboS0Mi1fIECqu+easdlDQJCahfQ5MzfAgkrjVpahOcDuKro6PIxdQA1ASLQk8DHASI9GRbrUKcChQ6cXIBhiQHXJG1j83VXATvE5vkxNPUAdnRQrzkw2wEqyaPiuc1XA5q439e3aQMAIrudb1ddOQMq7b8SxizZAGHYGKmZMJ0DPidq+6y9SwFv76AIDS19AHxeknUBsScCZm+L3RuIoQAMxw1rWRRJAaJY9ue5tSsBAAfEgaXzrP5rER5AYfzpA7yKKYyiKT0BgIjANeKoyQHr+wB+c41PAHKp4UTqrX0BihO+8QBw6wE2Pqmedew5AyefuXeBEQ0BGYGt8sBdCwCP1ojahxjVAQYmlglY0S0D6o2Kpvmc+QPu66rMRqCBAypgSKQj+U8BzHaCRWQVgQNSkEiedEznAEhn4ECv4GkAk0sdjDL0tQA6fYSMOr0LAMKI6FYnKUsBfPc9r2DtLQH27O3AC41nAaB08wvYAPsB41\u002fIP5fo4wLyavfbmNw3ALgSpMdGXR8A0YhfO6hZRQEwYx9CgClfAIpiknmYcSsCVbepfk4RawM2QFxBayEbAIJ38\u002f43kYEB6lxICxRExQPbowXtJFTlAyZkq\u002feVMJEBHeEVjGV5TwK\u002fl8MTeL0bAqV6ZqkcUMECsxPUVTuw3QKp\u002fnhCYcklAkeKBgNWmP0B6j7RMkp41QPwpE\u002f5uRdq\u002fcD31U+5LS8BPq8nkBiM4QIhUf3ecUENAMsEGNqcuVUA\u002fY9VM4WYpQCMZbWx7hhxA8Ry4M8W7UMBN37Q9Sy5RwAA6GhZDvwjAHbISTAtlVcBosEuPuC1UwER7MFnyz2FA04HvH5HlFkCDmSeO0\u002f8WQEOt7PbwVQjAilrNEiU\u002fYkDsC8ArqdQwQIa9b6bIIDpAcGtrbzmqLEAe1iw84\u002fFJQEaz9fqgvy9AUvcOuKWTPcDdOlhR63EzQEE7K8qL4k3AOXhhm1qkI0CQj0xt3Q5MQLsW9PKxfEpAqPnQkdTMQEBsxq5ayJY9QDxDzQkmZxXAeYD0nbStU8AmNXB27dArQOBNn4Z8xEVAGPXYD6wUNEDUtnu0eSpgQJgphyjePCBAHjF7cw7UVMCX5u17LNsvQGg0f\u002fg0nk7AScswMl+1LUDOV\u002fAlcEVCQEdpV\u002fyc9C1AWC9cIc4OJ0BnUf8CGb43wOf5xDzFVWFAam\u002fq6YGlUcDmfUTxnxVCQJwQIXYKeldAii09LxUVQEAjSExQAMo4wKW03WwxIlXA2whcaQoFJkBdVLTPAH8tQBg\u002f9SJBsxVAXO86nFKqN0BYGpMKGd0lQMBGhi1AIzTAnJVKvvOEY0CM9IpnfIRgQEYkrtrqrD1A7npdJXl6MUAFW1t+F+tGwMZbTVpqXBtAlRhE03ORMEAqk+M5sJdCwJZ6ICfvYy5AA29dv6XwDECOuralJzs5wC3keiEC6WFApze1TCf2UcDQ\u002fCCp8D9MwIOcN\u002fvFL2BA4i8toPDQv7\u002fCqoH+2edBQOfRgN7FKkLAWArVGXn5NEAIcg2Kt5xUwHrqQG9o9Po\u002fZX9ts11JPUAnB8IssgsiwEEOyk4cwFTAY8ADhHRjY0DQLhYF1R5FwK46F7jxCDXArW4Ez2CFEMBrZAxdQRZIwFMMvTi2KFbAalpIe3DWLEBpEKHbcfNBQJ8uMY9KuDbA+t4y2isBVMAWr8+jS6thQN52PI2a1TXAP8PmUBFoP8DyEfVVdKoJwGAG7N\u002fTXzvAb9NgHDnBXcDqi+h9XGMrQC\u002fup6x0wjVAD0oOvnxu5j9AjeLj591FwEytolwj\u002f2FAUa3nKuoENMAKku6Q+RJDwL1KYYSaDfS\u002fRfDSaFLuQMBqsTjtvWVdwL7qL0FizUtAVkyTOhLoWcCZ5Qqic2FMwCz7+LvvwxTAzQB7lUsbQ8CYZh5Q8i1SwCU7+0jTiiVATadZ9rULWsCQvFAI7+dJwG7QFK8dAFvAXI+KNIxeScDUTsiVHxliQLt0bDZh80ZARl9BzHC4E0BJ6Dh07HkpwIgWxJok+FPAUEXAbeWHNcBCOo\u002fWrKBCQLkuZOP2OipAfvzDTOqwNUABmNTwfME1wKx+k1gNneo\u002fqPunnkWRvj8JL5JtOzE8wKbU6iWGp\u002f+\u002f1pcIsIhlLECSmCGxKYA+wJTJV0x7czzAgxUW6gOzNkBf9UExACxUwGZSWJekRVTAoE1kG9mdvT+32toBJflQwAYf2PhorVTAyKqJUb38YkAHe5WWjnRBwOV8A+PGJzHAlE5838sIQMBixeXi\u002fhJkQDQQGP+seFrAgOJBnlapQkCA58LGlfNAwJNAczlVV05A\u002fKbe55lkWsD0oq4yym4rwOBY3oSS8A7AzV8DAjKkR8BeoTbTeycMQBBhQJ3ZEzRAp32vkYrLKkDiDcotwyxIQPolf79ezRBAoEV2dOiPfL980RkqvJNTwG0hv5X\u002f8CBA2N5l3vEjUECY9sI9m+opwMVP4ZLTdmJAiY398WpkPcDsfN7\u002fcFlSwAmPkASyZlBA2gZ6yCmMVsAe5Oczb1pYwKMVWZ3BFDJAB9H6GtXhJ0Aj7zV1hbVDwMqatoe3oVHAG8VmJ2mPYkDvd26CWGdVwMoZ\u002fL3znzZAeK3oTrYhY0D2zBW6ICAjwP0vQdhOL0PA7OPfOwCLVMA097BdHCZBwG9zTLfGzlfA4wTQIYKgLsB7uDngGFw7QCCTGz2Ex\u002fa\u002fcF6ama5PNcDZ2Qt7sdxiQCbK\u002f\u002fTWJmJAVgH+LtEJ\u002fL8Ml0E3ASkYQItc9B9271DA9pheeEM+FUC+WeMhyUESwAK40fXiHxXA4xdT7rQGHMC080XPl+lawADuUya\u002f7ShAWxwholOuY0BM9AaW\u002fHY3wETPHbO0l0LAS3+nZazXY0CqsxLPkrFcwOhtYfPRS0lADb1VmKzIScAsoOJmK\u002fpYwFXoTetu2UXAiPk6PhfON0DminKpvhQ5wBubKLf2bUDAK\u002fQYoN\u002fhWcBowVizOFRgQKQUo4PZlzbAYEYnIUA7JMA+KRYNp9z5P0wKCEUQG0DAJvBUpqTJTMBCFx4\u002f6+xKQNHyN77\u002fgzvANOVyDgAbQMD26MqWRvJVwJxBxyd5mlpAqAq0Y2nwOsDiMtX+KsM0QJ+L9LMYI0VAdN19inI0R8D38VRglo1UwCaBwTBUuUNA8SD4lj0uOMCAkEAPtJ1MwLaM+VFsdFDAp\u002ffOtaIXYkATzJIs8B9DwEl173WAVhVACrvcYJchIMDyEv8f7BBFwJhys1gGIVfAmSyQkelIQkAeiHo1FVwlwHTMV3zZgEHAzfH\u002fELC7Q8BuQnxmAXMfQOyulnV3VkLAmQ2e\u002f8RLL0ACYOlmg3JcwG\u002faiDQ7aETAeQq8QjPJUsCAaCMqUiZHwOux6dA5E2JAfJmDEKoZOcDQ43KJEEFAQCwD9iN6kzZAHWPU1rDrWcCHvALU9Ps8wDgWgfErFjLANRFCmnz2QEC6fXhTaAA0QLOC2MomZEjAu9eRgOqLPcA8NPbvlzI+QETrCOoP6UjA7sbh2B6+OcBhiXTQODFKQCv+8bmNFDnAVI12GlTQOMBUujDv5sMqQMQnW7xhm1zADTAK9Hw5V8CG7dBkySguwCpZYCcwa1nA8HZf6CE\u002fWcDgcUvmyJxhQCeHCSzFIzNA5x27oeWIDUDV2c+gHEI6QChcnZiFA11A80ZcP0UGWsBgvI8AIZk1wCCbiaw+8DnAGr1t6wAdQ0CkC7OZZ8lXwIZzY51BTjLAWw3AVKXBRcDV334WLDlKwF4cy55nHCJAksfiqmKWOEBfAhAdeHBCQA2HOAGJRjXAxDRfZumwQkDUD5Sgk7U0QNFqQs8avVrA8wiDY4tWCkBF2NeHz5w1wLT5Ycf5RUdAM+5dM+csYUDBQaUQkn8hQJLWuOY3YlnARshEjx5UNsAtEPxbOvxUwJpsXvo3eFPAYjzpPmxhNsDUpFPRIOgzQClZ5Jh1OiLASrdrIGrbRsAdDH2xm29hQHKEi6YQ9VnASRl4h8MGKsADshtkVSNhQHjjlA+c\u002fkNAI7xXNy5jR8Cyww5K0qtWwEYgrSfLBiLA3jynCChyU8C2lOFva20dQI2wzcSf3zrAFX2yisG8QUD9pZCW30gowGNB1AuIcmNAE0yK3cJBYkAC2WJpu9QlQDLKNaPI2kPA7k2mi3JkSMDkhgLDvOU0QKZFnsE5CkLAVsiEYyPjAEBsJk6tjYk3QFZzsdtO+VrAklRB93NoL8Cwtm0V2w9hQDCCi5\u002f4TkfAxxG9HxoeScC5Uf3IYd9dQJGfvRwES1rAPJ9z6dioQkAiotwR0VhIwDAZa4DZiF3AkmC5wKbRR8B\u002fGOFpQ5hMQMjGLK2rBTFAAbisXR6hMkAPqu\u002fU0gpTwMRD11eKn2JAzrQ7QduYQUCgmWwOvCoZQJ9bwS7oMkZA9UkBc4r+S8Atdg35GQQWQH8BvP1S50JAcCs5qywuMUAWWpUtaY8zQDoKVn1FRVXAnN+H3d9dY0AVzqMazjYhwLPwPYcb\u002fiVAuXeciag8KcAfJ8RrPSZEwEqs4XB7uSRAFjskubMvTEDeo6sBSn81QF2hsWkbtx5Ap0M1iI8SVMA0lE61fRleQGI1FgP7eh7AuBIzEdmbKEC8qh9GJqkAwM+euGcAiE\u002fAiflqv7Wq67\u002fJkfIU3FVKQG6rvhQ9tCNAwNBF544aTkDWNxxyae7wv66j30tXLBNAejLiGqP8LsAsccVWbBgtQBglLQ4cFzpALKuDC3rERcD0ZIHpc5kZQIa5FAu6\u002f0bAeCMb0zTVYEBW7\u002ffcSbk2QEQB8Tjnm8e\u002f6RU2vlz\u002f4r\u002f7kuzWaTBGwHBxqxf3QRjArl4Nr2UMM0Cc5oNEtpdKQO5gpm7AiEpAzT3a+OktN8AWo74Jc50bQFyjTYEh9QBAepyeWt7NQsCfXAGbYtY2wKSrwuQcqVJAiJBNcyabNUCfDAcTw247wPOrUdymyBZArArTx480VcDrJWbGThpTwDT4FL3jlOk\u002frGVB12jUVMCLasHcpL1SwCBoRmxoIF5AEFPOt4YdKkBojmNu1nQbwIp6K06XMhNAzNYXRfWvY0AEKRSG2bwiQD9yNRIvFUNAj5wU9L3pNUDXxDwbWcBQQKrd3lkMmzFA+PdCxZEXQEBLwZOc4uwhwNzwd5bkFU7AGqZGdd5gOUBj\u002fAPF\u002fJJRQGqajtxZdEhA5+Ovx8ybN0A9czxql2TrPzTyiMDLewpA7p68zPyTUMAIic+3tqczQKT3DbRmzDtAZ9VVkuSB57\u002fYG36R8tliQLLeOyss5yPAmshisGw+VMAcSnUHJBciQM7WMILAXFHAivjnaufkMEBAr819Zs8xQMbUx6Kr1QhAakAUOK\u002fsJECtPXlvjilCwAascBTT2GBAzYm0Lwm9T8CyK8QZoIhAQNIpejhT+FBA02mdOTDXS0DXph2ynesgwHJizZyVc1HAgg2Y5lIvK8AL7AwUhRInQOnzDONhsCXANrYLaX7xNEByZOAx+8bxP8hTLIKPqx3AwhFJ37oqZEBupqho9RlVQJhKQAQWbPc\u002flhYwmzo3DECJ\u002fQa5qEZAwD3jbZoGdRdAdjyAzoe0I0DmcRHsCeLoP23+2yJ\u002ffERACD8Nie8sM0C4UcnGfbUAwGYrREF5gmNAUK0\u002fd0epR8AwE7vy7UVBwEN4BAzZY1hAFHk9uJaEEkD+X3LV3rhMQAWKyzkmAU3AtQn1jXgnP0DdxyKuVxRBwMTDqjRNckZADsB8rSLTQkBeDnBePU9AQPqcbaQpnU3A9aym+nHQYECuUN8My+05wIx4NLlXPTDAfd+aYc1oAkAgodUlTOg2wLi4TCLpmVjAbkeEOms+PUChEVbapiBBQBKyj1TEJRtAtlnblTEbUsCG3gChrSFaQCRw3wIbCjfA8aiMLFCeNMD1KoadB2A3QKTC4Rsgy09AruLqATO1XsDIdPFEdAFFQOZnE79KpTlAGka5hKiPP0AcPrV90AZVwFZ2Go3X4mBAWW5wnbFrKsCgNX5EFxFCwAFoWr0wCAxAJJ40aGX2PcB493Uc7sBewFxdvWlaC0RAO9wm7z5+XMBT+YRv4Q4\u002fwACKSz7E3Ky\u002f2Yh9FUSfJcAf73oGTTs6wPL5ly1ff05AwYZWpTYvXMB6M9s3qDpFwCAarhVmdlnAX\u002f52\u002f1bTMMASAgthgfVhQFxEwhuZfyFAYlSH5KFhFkCOnIA1JLgEwPOT75OcCVXAAeDA+oQGNsCvxD1yQ7khQN9GNZAIODtASCoUZCReSUD5t6vvaOQ0QFQXHnKe4h1AsjXrP0Y3NMDJ183oRVYowEiryJlfpTlADfNZM8vTTkDZS43hUkw\u002fwN\u002fK+hNfhiFAz4lJmkdyN8Bj5T\u002fg0etSwH2FTlT8FlTAj9fX5oF\u002fKMDjWltFGXRUwH2vUIDqyVPA22ttw\u002f\u002fjXkAuvyUqbXI3wIVBri17xjLANKkgLh35GcD+QHZEVpNdQJTZrcjAllrAhnUYOhI69z\u002flc73RcZY5wGoCREm4WklAoEjHUugzVsChevNrgT8ywJihGd3z4jpA9BmrFCw0QsDW1Smgqsk5QIjG4PoO\u002fFJAmS2mrfqRO0BSrt1KrXkuQJ7xfm3pqiZA8BEzlYFUIcDF3BSVP9RVwGMMs5fL3zLA8s\u002fVb3nBNkBKd6F3oZgQQDl4eGuR3WRA0WPsTf\u002fKOcBTuES00EFSwHFBq6iu0T5AlUevzul9VMB20OhpXjpZwPYpj2Ngv0BAcdbKCBBTIsBbsb3eHWUywBsf98w4N0LAaDELYRZZYkAwhBcKRHRVwBipmsGvKTlAGHU+AV1rY0BpkRY0h65EQDVG\u002fxhWXzrA7hWa22VsV8BV2hdRW6MuwAjdflsFR1vAStsayi6eKEAlomONGOMsQLkUymBt5BhAABLntHN+HsD\u002fFMavzVdgQNtkZpVeQF5A3+7UB+vzDMC0eDooS3s3QEVDbKJ6pwDAUGJ9wIjiOcB4Sku2NeUbQN7t2bk8Bj3AHHw9ueph9z9dqmC+TWZawLHKMdYbEC3Ah6lMln3TYED1JDEIXGIrwFiD6JyXGE7A1+L9sJSuZUByc96KWiNZwJQTMYNj301AfffYkYugKsBWvRbJnvVWwJQp8ECqqSnA4a3qNQ3ePMAOgN2bsaglQBL\u002f0KYPQFXAbE+NnewOY0Dt9QiIBpw0wIrrE+9R7ipASKI7bxDBD8AAKMI35I9DwESW4ioB+lnAljQUWjJsQUDuCsawzvg+wBxEll9o2B1AfPIvCO5FVsBnBq8w8GxkQNjBN0D7RUjA+vmP92c3JkB26egfGFcowPSSwsYVPEjAG9p+yEe3WcDVB2qKYPw8QNqiLH+djz3A2k8W1YunJkCNC5++sIRUwPBWwVMRImNAA0\u002fY7SJkUsBpv9TV5mkiQJ0kmtxW7g3AERyEgCdpSsBKUc\u002fDqylbwJmTiiQiJCRA4K\u002f11\u002fHTVcDFAmjYG9VJwB6QS7uAfkXAg7mj4WVkIkBCSgk4QTxPwO\u002fSZq4sMzxAbyuaYZvWWcCLboXjw0xLwI5sDO6ILlbAxFnzSezkRcBqTWkVwXJgQNvh+8tgXj3Af7SflOWlNEBT5KxOtx0DQDrWspJ0QVbAcOlz7iXQUcDaCxndZ908wPYBkhHG6hhAfiw5kKTeHkCUw3oZj\u002f1KwNxro6WAPDrACGL68hqsOkDTeqiO0oc+wD9xDFRhLDXAuLh2DpG3KkAvUAaNWA5VwBK\u002fskAGv1XA\u002fmTdH\u002fzSF8CWcQPJTbdVwIZ90IwJVlDA3fB9df5KY0Bm5pZoJ3kzQO0kh7fX2C9AzQ9oXZHEJEA3a+lb7FpjQJduZMyQH1zAYPoBZLkdPMB862l45F1HwM+G2TXW0TFAWgZyOvu7WcB+xaSHglJIwPPWNoO5zzXAEdYwbhp7S8B\u002fBZqfvCM2wOoTinAcb0ZAeD3Dq\u002fQJMkC2ijYV3sE9wNdfVinkCC9AAd6uajJJJkB6eR9D1GtRwHrJ8nekOBxALkjEkoFNPMDbeL+XEO5oQPHUgurT7RnAk20h0l78VsAN9QREnNU7wC+2DYqbK0\u002fAVYcNGZORWMDav8Muii06wPHkCItOwRhAZHo2Y7OgK0D\u002ft0YGXARFwMQ534gFUmNAFP\u002fTO7\u002fGVcC49LcZJ3o8wKQrFyw1NmVAKvEaT+fFNkAU6e1RmtdBwOLVSMxQ5lPA\u002fqYjCL6gFkDOQj4ciYxXwAdmz2nnDCVAyJxL9TrJPMAE8jUuGPq9vyD2Dl7oKU\u002fAtPJNjXPfY0CxaLOif3pgQMKAJ2qG\u002fChADWYdyPfRP8DcLlJTRItMwPTVdK1yJEHA\u002fgPUVnfkC0DGG4hhF\u002fVOwMDp5UU\u002fJQDApdHPf+UDVsDFwoTWkXpBwP6otjBijl9AegzMxEyFXEBZptIV1JJawI08Bl+ycDxAEHql\u002f2HcRcCxlPYJcf1ZwNS\u002fjQZhZUzAINM\u002fhSBQRED8FifTU48iQH5z8qd9khhAsgzPJyKhVsB75YW98iVcQHp5+anut\u002fo\u002fzr98XzOg\u002fj8+xYr8pVY9QP2MMWJn3kPAvKXMUSB\u002fWMAshgzmjRcqQJxDdofb4RJAKLUrvotODEBivkmUo59YwP63q82ySV5AJRy9PVNTNsAvECRLVDMAwPBGQ3Tz9S5A6iVVv2mLRMA9Xx3TzY1VwDJh\u002fH8IvDpABpuYRfVhQkAqlRKw9kY3wNmJFlpcF1TAsGXRrL3tXkB67h7YK7ExwGjkvhUrIxtAjJ12K+ROOkB4stvF6PNDwGhGl0gx2k\u002fAOD9xtCa9K0BEGqXZ7o9SwAzlBOyyA9e\u002fWQweq+XJAEA65JBY6NsRwLlI\u002fKuHMOs\u002fEbZ0sSquQEAOTCnCpVVVwBIaXEUpbE\u002fAIiNXLZKTVsCCoWsvr0NBwBkz23itdWBAueHo6+ySAUDCQ\u002f0QFV0sQMkpcasaW0VAjCA7WRPRUMCG73Gz0E4xwDwJHBC9UEFADNXi7m9RRkCzUw0yzJBAQJT9pDkukTpAbteKTpYzRcAEAkrHqXA8wFSoW0sUwC5Aknl5sjVROEDvQajRS8oywPmiF8Yw3BDAGsTVmg9zVMCIsf4gFYFUwKNwZmxynDVA04mhRAnHVcAX1KPWp45TwInZdo44f1dAlqkMbfjd+j8GTUowZnrzPxlOaeNktzTAR2wVg7LTTkBGbPaus7VUwJGhwldfUkdAox4KmBRo+b8zGrR8DmI2QHk1jYoJA0DAY+voQIg0CECiDlXV4+A9wC5ErctfRUvAaRjLaTySQcCEVGNzPJMuQELzNef9mzRApIg17Q3XOkB6xnixq\u002fFAQAoFJLDsxyHAq06FiF\u002fhVcCpvzQLfyoTQFj7Zqv3+kVALLWKp7NsNECfGQtAFupbQATBAJ9kginAp6jnJZOoVcBS+0OFtScZQA2+FpXrVjvAu3LosxP4VMC4ubsQtwc2QKwm\u002fIultERAtcDkAX8XB0D0m5+eoolJwFLC9rQJx1dABrM89kiKVcCoqHqirGo1QHDANC84T2BABxl2RjrBQ0DaTlM42+gnwA0PsVpqjFXA5Abus0S1HUBCCe+f3HFTwBIVf6BZHAhA5vmljqVvPkCu4yRpOqZBQGxnWUJdB+o\u002fHBZXt2DKYkDg0vB4RIhbQE3PXIvtiTNAYizho\u002fBj7j\u002fCtqGNekBDwJGi0mH87gDAz0V30ohbQ8AwuRMoavTuP7Dnk6KKEj1AciGwPWouVMBav4O+nZMuQHv+T5Jf22BAN248w6nlSsCBL8SAaSJLwIfxfMuovFpAdB5KmvMRWsANjsl7A8grQNXGc53otEDAsFwQRV3bTcCyz7tzRLA9wMVeXmqFETlADRBWqB2XUED6DHxF50Y1QIcCuePt8lPAGNHTIU2NYEDPoztYjrkfwFRcVtOeSt0\u002foSmwE2khQUAahx73wZFOwBNcwJHZ81nAcG1L0HyuQkCCduAaMAhSQJ3kSKRjERtA6cUVraRBVcA8bLcOlEdkQMCKy7lSERfAlDA1ii3G2j8lVoX0RJITQAbMgnhMajzAxjbeanaHW8D2Bihd10JMQFRl6Qix7ExA+nThFZ5G3T9pUgfhgNhWwGLJ7WDgT2FAT2tfzeQNMcAn3dMJSI8XwP3CcUO08TXAkP0F37KPPMD1LQeB2yFXwC+Zd5JaLENAbNMMs7vVV8Bky5psaOctwAJn\u002fsNezzXArI0MT5gkLcB2onXGvTU1wPmynjzYV09AkFFg0jAQWcAbcrD0MuBFwDDdjh+4OFXASl8xrPJeQ8BDoOntZJlkQGKK0mQzxyxAiMFMpGPUQEBfeFHvPpJDQG+CGsqyKk7AjW6oobqmN0Dw+QbSasdRQCR3zl+gzEtAECKkidsmUEANFdGT310SwDimSpEoLCNAokPf2zHGSUC9eaixqYE6wKzW4WaDfihAXEE+zlZUPkDC3gfTgk5HQBIRMETgsjFAAhATOR7ZRMDaW6C0S61WwL\u002frUBEgX1TA4R\u002fAPIcFQ0DZqDAEEKdUwFdM0QZpJVfAkwXDNvr9ZUA7\u002fDQfJwAPwAbc84LiPj\u002fAszDvFRgbMsDvF9qxHvJgQDgoMjcRFVjAyHF9T2cVOUAU3We8SJcTwGoMS\u002fmGUUlAm9fIEt6vVsB4sWAvDxgewFbePpLSBixARJ5Wb40CSMC0barRHk8rwFg\u002fXqyIPkNALisj1rs7QkC90wURl91CQAwfTDHW30BAR+TdH0z1EkCQbSFKwmVTwGQ+bft0aSRAPUwcfTAlUkAK8CesCs8tQK9w\u002fH1Cf2FAcp6L9AenKcCsFZQ7T2hUwHFygL98wjlAwgdBWNGhVMCkbqB\u002fRj5XwHM6oM0FaTlATFkC8RUHRkB82P0dNwszwIiCBBdNgkbAmKGSX03ZYEBUECgniOBWwEl\u002f9Um2cDVAAros96qnYkBi39UE9vhKQIqh8zgToTfA9Jt\u002flqnLVMAAbGrerx06wG8AnYqanFfAzVQ5AtTmQMDMX54vVflFQDhNWuJJpDhAoPfA62OCM8AeQUuTVK5jQCeRgnipb2JAWkZg\u002foSDKsCw7bQOG0wpQI9fm+E4v0PAU7NIYeirJ0As6MyeWxMAQFoaUkvBKQnA6Ili5hfWDEAJ0IkZFJtWwMiDpyTC6B7A9YPtKFmMYkCAuoM9tmQowKodlMhRGUDA7Aen9grjX0DmvIKtJjRWwBAXQkFA10NA0KIAZ5KXQ8CjFGPcp\u002fdWwL7oHx0yy0HAXlaxaNVKRUCvY9KijaM0QE+D4qKfjT\u002fAyTeNQIFUVcD7Lsp2e0tmQG7XDl+L4DXAkPFB+zV3QcBme95g2486QK7HrlmGKTvACgwzpTM7XsBPesBJDAhKQCRowTrDl1NAnm25lki+RMDlEon0ILtTwIdS8UGZ2GdAGUp8PysLM8D39VGYMIk4wFVQUhCEKAfAMaIyiOWROMBQik+CfPRZwOdffNOoTUpAVm363FiASkAemCmp35g7wKMOosIKjFbAQjBC\u002f8HjZ0CUs9yoSEL9Pw6eAX3DNTrA059I3m+SIkAkvXp5WMFAwCxLdUgnAVnAJjmc4QPEKUDOPPQZbMlZwLwHpHJ5ECjAE8IP4nQ1IMCIb9CH1qxBwMJvMRlPITfA24HbCCauV0DKN5JZXCZZwOvRvEKtEUDAwWO\u002fWBcoVMCS4Uk9BCQzwKF39d424WVAGok0QVnfQkATiweaQb8BwDN2aPcYbj5AJWGi+Pz7VsBW\u002f0fthRopwJawbLXrO0NAvfXU25p4S0BGprdS3A5KQNaFlx6fuULA0cpta7I6RsCcLeNFS5M8QFf2qREchjbAe2c1fVEYSMBKwBfOQdlIQIoY0i5eEElAbpTXEDvUQsBj+RiBGZ1BwEeN3R7vn1TAer3DinUHVsA4r7Tw6k0vQHakigymwlfAsopWopQLWMB8zkrcg5ZmQKjFgroYnEXA4VPAtb6yQsD0lS5gsqhCwNP+iVKdVGNAkZeNuLDGV8Ag6RWuwws+QO65iaI15fM\u002fsz59yftmREDBTFsjBm5awDjPl8VYxDhAf\u002flqs893MsDg1jxzX0M7wKvXk9AQzUbAABhqc36qPEBybDpYIFhMQIGsP99vSFFAdMM3BrxtQ0CcmnomFEgzwOouuQmmc1bAnyhC4i6QP8DXrgHIHElEQFple2b28BXAIkPQfYlRY0C+XrsY2IVCwHkguFuKf1HAWmzz7D9wRUCV0m\u002f3qq1XwIrgSwSYNVrAi3CGG0ztRUBMNEK3rNg8QMdTmrWlaTDArh5ngpzeQMAV1E\u002fdyqxnQGeZQ6miG1jAd5YEGK9UP0APToj1LRVfQHfxBVk07UpA8FPNoKAvIcCaaAHRnrlUwL9TbwRGrDDAyzXk8aBkW8AOp85L2H9CwI9DDhKGXEJAxEg6a7AQRkA4hpIVFZMswKPF0vfJVWNAEN5PMxP5YkAKNmPLtcMUQABjYhxuR0PAt8\u002fC5CRbQsAhnQuiECk3wKSUA4CghzrAM3aFY04y5j+gNVFyeS9HQHyVTokTElzAzn6+he86O8D8QwvJoCRhQE7S3Uk8HifA6FwxGW94NcBrqcFUwVBjQGb5\u002f14lOVrAHEuXKBPuUUD7ly4YU\u002fNBwKKj1FuESTJApX+St3vZQEDasj2McOghQBnbkFjpBFPA5DCbh0EaYUATHtsD7Q4ywKtjZahyaCBA\u002fSEF4LssFEBmcA1C29BGwN5FeMcG+FjA0fP8JVKMCEAvyKWInU82QMaH\u002frWlVSBAS5jFmutTUcDXFe1mi51gQPGjrUWnkEHAlggfjwis3j8lSS+zOy8SQHY+f8kME0PAuVeqZJROVsCUaSLI7EI5QI93iTAQVEZA2urvWlqJH0BcdSO167RSwKPgF0AC8V9A5MYuAtr0ScB3mzcgSBTgP3APgrRWLs6\u002fIJGv9z90R8AMyXL\u002fLf9ZwOQNDDCPTCpA\u002fLwrWTP6WMA2luU9MFlBwJ7dS9YyXT7A2ZleBe70MkCqlkZ03FdBwKIkQiki1iRAfCNtsvL1VMBz\u002fAWCmkNIwClFYDFN8ljAemJNt3PdQsChDOe2KBRhQCTyOe0qQ0VAfnBgpUjQAMDqb8Z6MlQiwH7kLX7s4lXASZgtXMCjS8CKeD2sdNhEQNDR52mqHjhAWFo3W9frM0D8tjM78PMFwBxR+uQ\u002f6x5AqINXbbsQIEDN9rchi94MwDhTgCvsXRpAx0tlO0LxKkDqxjvYyiAxQMAaEXI7fh9A\u002fonyxQslGECitfaCtBhTwBdY6tZihlbA4\u002fX7C1tjDUBWioh5HA1TwIj2eW8oC1TAqKeCsVYmYUD\u002fZioi1JUpQAHO1KILdSpAQCAoXZSDk7+kH9aF9G9gQKnARjDPaFjAAckKjIlPNEDirDjnkTFGwCyxt\u002fjFwytAvs\u002fOZtE1XMCd3N4EDWcmwPBBqY0BaRpAfPdLzCOLO8BWfFAfMOYZQL7zp3xr\u002fSpAh4JAQmZ0N0B+gKSq89o4QFhrmS1h3hRA8vDyR9V5\u002fb\u002ftyHJc9iNTwJAPVkb3xR1AOHBD+YU5OECSG1a95s8kwM2gNqkB32BAPLK5B6fkH8C2\u002f0gWGZ1SwKVghwRgAkZAIl3DCov5VsAW86IUkgBWwC4H\u002f+sv3z1AI06tMwM9xr91Wm2rAnwNQEYU9nmjczLAsc7fKhDNYEC4vbcVrbZWwL+OoYhB+0JAQiTogQYCYEBZqLzpwbsrQLgs7avmX0fA7NkE0xpOU8BYSDEeiLoJQIYPMRcgTFrAcifHtMpYEkCqqHGMx4U2QDGz2E0\u002f2fe\u002fbl8CkqtGTMAHZ1Id22dgQMyVTy2XgVtAveDecikTBECmNyMQG0UQQMOIWMo6cSXAYvurcEO4KsBeV\u002fhnvlUfQH5a5bZi0jrAFbYVDMg5EkB1Xr+gjYpZwBBXaceEpi7Ab+VJxv4TYEBWlXfOxHUvwJ5fikeRejbA+PmMTSzoXUDjqcTa7XpUwE30ugR5WzpARiYe499c+z\u002fUCfADZKZWwLmTTzcd3jzABuDvt9CrSUC3HpK\u002fM69JQEmPrFrzy+M\u002fL600ZsHNV8DQay6mOoxcQHoaRhl2IP8\u002fYD09gyFMQ8Das70SbQoRQJBZCO\u002fzHlJA\u002fBXBTewEI8CWu48MHt9JQGh0XfMu7ENAsbK+8GXvQMAMmfcmGrxPwAMRNp4M3l9A5K8Y+uFQMkCZ\u002fLOhOJVDwOfOYMhIH0XAVvbKJxDHS0CKVdl\u002fsJE9QKjnB46WjjHA6dtR84p6U8Cuz8vyXxlcQB\u002fSNpis9xPAIMCX0eMDG8DzK3yHdiQDwLwSnwML3Q7A3yJksGccOMCx9DO\u002fZehbQFyf+owUpCPACDhHLfja\u002fz+eAf0VgsU+wEaJ2++hFkHAHfsFawZgHEAjYMAhHEZBQHlZhwz6BjlAFksUXubxMsDvUBvWQtchQFdPr9bRVzzAR\u002flPX7qPYEDnrb3V4ANEQDY0VnDlEjhANoL7+5V\u002fNUCIpYm8rcZKwG0lS5ApSDjAFu1zXKJ+Q0CpBL\u002fFNb1VQB2NsaePa01AJU82eAHqRMB7t0P2b64vQDQSKmd1rQlAWU3Noxh+PsCgF\u002fm+iRtJwASGq0lHclBAJHhd4klANkAcfO7+0MghQIhwEQgbuTnANOKw\u002f9YYR8DaKT3xA1xLwBobV9Cf4xJAii5f9Y0QQMAPBs7vCq5GwHFHXwjUmVdAkQqD433jLsCVGR0iV3siwLN0WfkNaT7ALBVREXjLMkCgjVmLcY8xwOJE8fQr+kNAWrmkstLVDsBT4w8+a9dTQADkQUpXY1jAdUu1OCYI9798PM4eVElEwK7V7pPwaTbA6s8l5SbkREBbHM0vG6pFQGQulO5XmjtA1fWPNb4TQ8AQsHtjdIdUwGr9xCaWkTxA0aBS1ASvRkA9qD539P0jQAOUw6B5TT9AmE0oxReILMDXfyw8oe9XwOtLT7qWPEZAFhZAw3mBU8AWHgv5TbMzQJTa8zC3jEVAZeIyu7wiMUDXz437qYs4wEK\u002f6OqjrjnAajF71KLkYUAvOFvB49VVwKpgSdsXDkRATLogz95SX0AuniEht1JTQCL+T3YroRVAvpNe1uuDVsBlg6so\u002fkYqwOgh7SX0WFrAqZFKjY5\u002fEsAjxSEGrFtEQDT4llHJWEVA5lZ5cRR9MsAehMctMvdfQOkNqF5QKVtA7hq2OYroPUCPyENvxkIhQK9rLhWLrDrAHDdWwC8YKUB0TovrH0g5QKfuJtX93FXAeDrVYIATBUBnLTstdRLWP8H3nNfoUmFA2ENZx+1t6L+7QARthm1EQKoiH2xY5zTAdiOtE4n8NUDH2L3b9nMgwH8TLHnXXCNADuP9z5QTIEBcLIPgLiMUQGBeYBHymEfAbnIa5m9HYkCf6Drt7C4RQNbjJaZSzAHACdTNvOzcSkDqQc2sHXZOwBMLoVGfvFvAKwyMgeLBEEAXF5x8Hpo7QEWrqcZnKTFAbneRMCVOQ8CfSgGE4x9iQLmxIZfLfydAClyqaKkIJcBaKLIoTmE0QCYj3cUOXETA0YXMcMiWVsCxbLZdKRnzv\u002fcHhQ9iEiZAJk0Gp656HEDCcAcP3WZDwJhd\u002fk2MjmJASH85X9XcHkAaMb82mIcTwC\u002f0xRWR5UVA2Kv1IaglRsBk930uZyZWwAUTXeZWFkVADeCzuLCpVsCttoXYu1MDwBVJuMjXVgfAsuXQlevvBsCZ2AZoWAYvwDsd7zSvQFBAIkHlwjIsWMBBvVbZ2gJKwK8KpJQuKlfA4MYGTPdzQsB4T1S0XBxhQAIkSjGFIARAwu5lBvTj4D9rFQc\u002fQi8AQD1+BSj8Wk3Agh2CMhmWMkBPsQGDXcYjQNiJvB386BhA2ENeSwqBS0BM+0Jfk7M3QAn7miuogiBAxB7eDhkIRECULn\u002fWmPlAwLr+OTcOmjZAJt0h4U1qSUCJ0fGGAA72v1N34lubkx5AKGTQheK5MsCY30JCBNhGwEcBWdoMdEDAdxHEvzp\u002fMkCl6vYQxj1RwHmg2tbEnkbAg6EIJ\u002f1kYkAQ5EY6Y\u002ffiv4TDFIfSKgzAnA04HhKwJkDrIBw4gdpkQIoq9q6SzljA0VyPTcZ1EUCg1FoMkAgXwMuS0eqZRjFAAiL4gI7kV8DYb8cFNl4aQFMKAWBuRBVAPabJVDb3P8A\u002fnelKYFgZQNYqVqzqjDhAnoJ3wAIeIMABYBiEm6waQP\u002fglngC1ypAlgg2wVRb\u002fL903jNeYkBPwAqveI6c7da\u002fgy49EPeGOUDuUTaF7u42QP2l\u002f4j0gGRAscsAbntGG8BlVAzFvl1TwKFvQqMZiyJAbxh12FIWVMCVUDk3NxFawBe2VZgkoCZAzE7xW+PJN0Bwv2f7o7EQQH72ubEt3jrAuiihLZLQZEB1SqnLTZc7wAF9Ag\u002fCciBAmUDowXaSY0Ax\u002fWCF3NFDQAkAA\u002folyR7AXYfza+gvUMCeZQYtyzwfwJJ6x9TGulrAKABDfPwwG8B7+6gujy8eQFuT5vZSizRAu6iyU93f4T+Q7nFXKpRkQFK0lB4WGGVAlwIngYNZL0CmYvj+JK8TQGyIJ3Q8yUjAtnSvqjkeCkDDZrWM8aEcQLFJb\u002fbtnuo\u002fLOBsHNgaQUAyQEg7ZNNXwBiegzxadTbArEBLcLlCY0Cm0mYbMxc3wPbiTgqseyrAKjAW\u002ftpbYUAy9VcEYPZXwJZPh98bGlFAUnGOCUexOMBbwhe1kwRSwJkp\u002fAznjkLA"},"yaxis":"y","type":"scattergl"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"x"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"y"}},"coloraxis":{"colorbar":{"title":{"text":"digit label"}},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"legend":{"tracegroupgap":0},"margin":{"t":60}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('1b91b883-378f-44c6-96a5-5c14c0edbf4d');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
 
-        <pre><code class="language-python">iris['PCA1'] = X_2D[:, 0]
-iris['PCA2'] = X_2D[:, 1]
-px.scatter(iris, "PCA1", "PCA2", color="species", width=700, height=600)</code></pre>
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
 
-        <iframe class="center-iframe" src="./plots/iris_pca.html" width="800px">
-        </iframe>
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
 
-        <p>We see that in the two-dimensional representation, the species are fairly well separa‐
-            ted, even though the PCA algorithm had no knowledge of the species labels! This
-            suggests to us that a relatively straightforward classification will probably be effective
-            on the dataset, as we saw before.</p>
+                        })                };            </script>        </div>
+</div>
+</div>
+<p>This plot gives us some good intuition into how well various numbers are separated in the larger 64-dimensional space. For example, zeros and ones have very little over‐ lap in the parameter space. Intuitively, this makes sense: a zero is empty in the middle of the image, while a one will generally have ink in the middle. On the other hand, there seems to be a more or less continuous spectrum between ones and fours: we can understand this by realizing that some people draw ones with “hats” on them, which causes them to look similar to fours.</p>
+<p>Overall, however, despite some mixing at the edges, the different groups appear to be fairly well localized in the parameter space: this suggests that even a very straightfor‐ ward supervised classification algorithm should perform suitably on the full high- dimensional dataset. Let’s give it a try.</p>
+</section>
+<section id="classification-on-digits" class="level3">
+<h3 class="anchored" data-anchor-id="classification-on-digits">Classification on Digits</h3>
+<p>Let’s apply a classification algorithm to the digits data. As we did with the Iris data previously, we will split the data into training and testing sets and fit a Gaussian naive Bayes model:</p>
+<div id="ad0d0872" class="cell" data-execution_count="130">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>Xtrain, Xtest, ytrain, ytest <span class="op">=</span> train_test_split(X, y, random_state<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> GaussianNB()</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>model.fit(Xtrain, ytrain)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>y_model <span class="op">=</span> model.predict(Xtest)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now that we have the model’s predictions, we can gauge its accuracy by comparing the true values of the test set to the predictions:</p>
+<div id="02229470" class="cell" data-execution_count="131">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>accuracy_score(ytest, y_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="131">
+<pre><code>0.8333333333333334</code></pre>
+</div>
+</div>
+<p>With even this very simple model, we find about 83% accuracy for classification of the digits! However, this single number doesn’t tell us where we’ve gone wrong. One nice way to do this is to use the confusion matrix</p>
+<div id="de39f96e" class="cell" data-execution_count="132">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> confusion_matrix(ytest, y_model)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>px.imshow(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    mat,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    text_auto<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    color_continuous_scale<span class="op">=</span><span class="st">"Blues"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="bu">dict</span>(x<span class="op">=</span><span class="st">"predicted value"</span>, y<span class="op">=</span><span class="st">"true value"</span>, color<span class="op">=</span><span class="st">"Count"</span>),</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="511eec3d-500c-47d7-a14a-e718ac37f97d" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("511eec3d-500c-47d7-a14a-e718ac37f97d")) {                    Plotly.newPlot(                        "511eec3d-500c-47d7-a14a-e718ac37f97d",                        [{"coloraxis":"coloraxis","name":"0","texttemplate":"%{z}","z":{"dtype":"i1","bdata":"JQAAAAAAAAAAAAAnAAAAAAAABAAABxQCAAAAAA8AAAAAJwAAAAEFAAABAAAfAAAGAAAAAQABACsAAwAAAAABAAAAMwAAAAAAAAABAAAvAAAABgABAAEAAiYAAAIABAEAAAMHHg==","shape":"10, 10"},"type":"heatmap","xaxis":"x","yaxis":"y","hovertemplate":"predicted value: %{x}\u003cbr\u003etrue value: %{y}\u003cbr\u003eCount: %{z}\u003cextra\u003e\u003c\u002fextra\u003e"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"scaleanchor":"y","constrain":"domain","title":{"text":"predicted value"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"autorange":"reversed","constrain":"domain","title":{"text":"true value"}},"coloraxis":{"colorbar":{"title":{"text":"Count"}},"colorscale":[[0.0,"rgb(247,251,255)"],[0.125,"rgb(222,235,247)"],[0.25,"rgb(198,219,239)"],[0.375,"rgb(158,202,225)"],[0.5,"rgb(107,174,214)"],[0.625,"rgb(66,146,198)"],[0.75,"rgb(33,113,181)"],[0.875,"rgb(8,81,156)"],[1.0,"rgb(8,48,107)"]]},"margin":{"t":60}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('511eec3d-500c-47d7-a14a-e718ac37f97d');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
 
-        <h3>Unsupervised Learning Example: Iris Clustering</h3>
-        <p>Let’s next look at applying clustering to the Iris data. A clustering algorithm attempts
-            to find distinct groups of data without reference to any labels. Here we will use a
-            powerful clustering method called a Gaussian mixture model (GMM). A GMM attempts to model the data as a
-            collection of
-            Gaussian blobs.</p>
-        <p>We can fit the Gaussian mixture model as follows:</p>
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
 
-        <pre><code class=" language-python">from sklearn.mixture import GaussianMixture
-model = GaussianMixture(n_components=3, covariance_type='full')
-model.fit(X_iris)
-y_gmm = model.predict(X_iris)
-iris['cluster'] = y_gmm
-px.scatter(iris, "PCA1", "PCA2", facet_col="cluster", color="species")</code></pre>
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
 
-        <iframe class="center-iframe" src="./plots/iris_cluster.html" width="100%"></iframe>
+                        })                };            </script>        </div>
+</div>
+</div>
+<p>This shows us where the mislabeled points tend to be: for example, many of the twos here are misclassified as either ones or eights.</p>
+<p>Another way to gain intuition into the characteristics of the model is to plot the inputs again, with their predicted labels. We’ll use green for correct labels and red for incorrect labels</p>
+<div id="fdc6624b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">10</span>, <span class="dv">10</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>),</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                         subplot_kw<span class="op">=</span>{<span class="st">'xticks'</span>:[], <span class="st">'yticks'</span>:[]},</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                         gridspec_kw<span class="op">=</span><span class="bu">dict</span>(hspace<span class="op">=</span><span class="fl">0.1</span>, wspace<span class="op">=</span><span class="fl">0.1</span>))</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>test_images <span class="op">=</span> Xtest.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">8</span>, <span class="dv">8</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">enumerate</span>(axes.flat):</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    ax.imshow(test_images[i], cmap<span class="op">=</span><span class="st">'binary'</span>, interpolation<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    ax.text(<span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="bu">str</span>(y_model[i]),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            transform<span class="op">=</span>ax.transAxes,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'green'</span> <span class="cf">if</span> (ytest[i] <span class="op">==</span> y_model[i]) <span class="cf">else</span> <span class="st">'red'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_files/figure-html/cell-20-output-1.png" class="quarto-figure quarto-figure-center figure-img" width="639" height="636"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Examining this subset of the data can give us some insight into where the algorithm might be not performing optimally. To go beyond our 83% classification success rate, we might switch to a more sophisticated algorithm such as support vector machines, random forests, or another classification approach.</p>
+</section>
 
-        <p>By splitting the data by cluster number, we see exactly how well the GMM algorithm
-            has recovered the underlying labels: the setosa species is separated perfectly within
-            cluster 0, while there remains a small amount of mixing between versicolor and vir‐
-            ginica. This means that even without an expert to tell us the species labels of the indi‐
-            vidual flowers, the measurements of these flowers are distinct enough that we could
-            automatically identify the presence of these different groups of species with a simple
-            clustering algorithm! This sort of algorithm might further give experts in the field
-            clues as to the relationships between the samples they are observing.</p>
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
 
-        <h2>Application: Exploring Handwritten Digits</h2>
-        <p>To demonstrate these principles on a more interesting problem, let’s consider one
-            piece of the optical character recognition problem: the identification of handwritten
-            digits. In the wild, this problem involves both locating and identifying characters in
-            an image. Here we’ll take a shortcut and use Scikit-Learn’s set of preformatted digits,
-            which is built into the library.</p>
 
-        <h3>Loading and Visualizing the Digits Data</h3>
-        <p>We can use Scikit-Learn’s data access interface to take a look at this data:</p>
-        <pre><code class=" language-python">from sklearn.datasets import load_digits
-digits = load_digits()</code></pre>
 
-        <p>The images data is a three-dimensional array: 1,797 samples each consisting of an 8 ×
-            8 grid of pixels. Let’s visualize the first hundred of these</p>
-        <pre><code class=" language-python">import matplotlib.pyplot as plt
 
-fig, axes = plt.subplots(10, 10, figsize=(8, 8),
-                         subplot_kw={'xticks':[], 'yticks':[]},
-                         gridspec_kw=dict(hspace=0.1, wspace=0.1))
-
-for i, ax in enumerate(axes.flat):
-    ax.imshow(digits.images[i], cmap='binary', interpolation='nearest')
-    ax.text(0.05, 0.05, str(digits.target[i]),
-            transform=ax.transAxes, color='green')</code></pre>
-        <figure style="text-align:center;"><img src="./images/digits.svg"></figure>
-
-        <p>In order to work with this data within Scikit-Learn, we need a two-dimensional,
-            [n_samples, n_features] representation. We can accomplish this by treating each
-            pixel in the image as a feature: that is, by flattening out the pixel arrays so that we
-            have a length-64 array of pixel values representing each digit. Additionally, we need
-            the target array, which gives the previously determined label for each digit. These two quantities are built
-            into the digits dataset under the data and target attributes,
-            respectively:</p>
-        <pre><code class=" language-python">X = digits.data
-y = digits.target</code></pre>
-
-        <h3>Unsupervised Learning Example: Dimensionality Reduction</h3>
-        We’d like to visualize our points within the 64-dimensional parameter space, but it’s
-        difficult to effectively visualize points in such a high-dimensional space. Instead, we’ll
-        reduce the number of dimensions, using an unsupervised method. Here, we’ll make
-        use of a manifold learning algorithm called Isomap and transform
-        the data to two dimensions:
-        <pre><code class=" language-python">from sklearn.manifold import Isomap
-iso = Isomap(n_components=2)
-iso.fit(digits.data)
-data_projected = iso.transform(digits.data)</code></pre>
-
-        <p>We see that the projected data is now two-dimensional. Let’s plot this data to see if we
-            can learn anything from its structure</p>
-        <pre><code class=" language-python">import plotly.express as px
-px.scatter(x=data_projected[:,0], y=data_projected[:,1], color=y, labels={
-    "color":"digit label" 
-})</code></pre>
-        <iframe class="center-iframe" src="./plots/digits_isomap.html" width="100%"></iframe>
-
-        <p>This plot gives us some good intuition into how well various numbers are separated
-            in the larger 64-dimensional space. For example, zeros and ones have very little over‐
-            lap in the parameter space. Intuitively, this makes sense: a zero is empty in the middle
-            of the image, while a one will generally have ink in the middle. On the other hand,
-            there seems to be a more or less continuous spectrum between ones and fours: we can
-            understand this by realizing that some people draw ones with “hats” on them, which
-            causes them to look similar to fours.</p>
-        <p>Overall, however, despite some mixing at the edges, the different groups appear to be
-            fairly well localized in the parameter space: this suggests that even a very straightfor‐
-            ward supervised classification algorithm should perform suitably on the full high-
-            dimensional dataset. Let’s give it a try.</p>
-
-        <h3>Classification on Digits</h3>
-        <p>Let’s apply a classification algorithm to the digits data. As we did with the Iris data
-            previously, we will split the data into training and testing sets and fit a Gaussian naive
-            Bayes model:</p>
-
-        <pre><code class=" language-python">from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
-
-Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, random_state=0)
-model = GaussianNB()
-model.fit(Xtrain, ytrain)
-y_model = model.predict(Xtest)</code></pre>
-
-        <p>Now that we have the model’s predictions, we can gauge its accuracy by comparing
-            the true values of the test set to the predictions:</p>
-        <pre><code class="language-python">from sklearn.metrics import accuracy_score
-accuracy_score(ytest, y_model)  # 0.8333333333333334</code></pre>
-
-        <p>With even this very simple model, we find about 83% accuracy for classification of
-            the digits! However, this single number doesn’t tell us where we’ve gone wrong. One
-            nice way to do this is to use the confusion matrix</p>
-        <pre><code class="language-python">from sklearn.metrics import confusion_matrix
-mat = confusion_matrix(ytest, y_model)
-
-px.imshow(
-    mat,
-    text_auto=True,
-    color_continuous_scale="Blues",
-    labels=dict(x="predicted value", y="true value", color="Count"),
-)</code></pre>
-        <p>This shows us where the mislabeled points tend to be: for example, many of the twos
-            here are misclassified as either ones or eights.</p>
-        <iframe class="center-iframe" src="./plots/digits_cm.html" width="100%"></iframe>
-
-        <p>Another way to gain intuition into the characteristics of the model is to plot the
-            inputs again, with their predicted labels. We’ll use green for correct labels and red for
-            incorrect labels</p>
-        <pre><code class="language-python">fig, axes = plt.subplots(10, 10, figsize=(8, 8),
-                         subplot_kw={'xticks':[], 'yticks':[]},
-                         gridspec_kw=dict(hspace=0.1, wspace=0.1))
-
-test_images = Xtest.reshape(-1, 8, 8)
-
-for i, ax in enumerate(axes.flat):
-    ax.imshow(test_images[i], cmap='binary', interpolation='nearest')
-    ax.text(0.05, 0.05, str(y_model[i]),
-            transform=ax.transAxes,
-            color='green' if (ytest[i] == y_model[i]) else 'red')</code></pre>
-        <figure style="text-align:center;"><img src="./images/digits_predicted.svg"></figure>
-
-        <p>Examining this subset of the data can give us some insight into where the algorithm
-            might be not performing optimally. To go beyond our 83% classification success rate,
-            we might switch to a more sophisticated algorithm such as support vector machines, random forests, or
-            another classification approach.</p>
-    </main>
-
-</body>
-
-</html>
+</body></html>
